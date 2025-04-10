@@ -1,6 +1,6 @@
-const Footer = () => {
+const Footer = ({texto}) => {
     return (
-        <p>© 2025 Mi Organizador. Todos los derechos reservados.</p>
+        <p>{texto}</p>
     )
 }
 
