@@ -2,18 +2,21 @@ import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-rou
 import 'bootstrap/dist/css/bootstrap.min.css'; //Importa los estilos del css
 import './App.css'
 import {Header, Footer, TaskCard, NavBar} from './components'; //Impota los componentes de ./components
-import {Ejercicio, Bienestar, Estudios, Finanzas, Tareas, Trabajo} from './sections' //Importa los componentes de ./sections que despues cambio a ./pages
+import {Ejercicio, Bienestar, Estudios, Trabajo} from './sections' //Importa los componentes de ./sections que despues cambio a ./pages
 import Button from 'react-bootstrap/Button'
 import Home from './sections/Home';
 
 
 function App() {
   return (
+
     <BrowserRouter>
       <Routes>
             <Route path="/" element={<Home/>} />
-
-            <Route path="/Estudios" element={<Estudios/>} />
+            <Route path="/estudios" element={<Estudios/>} />
+            <Route path="/trabajo" element={<Trabajo/>} />
+            <Route path="/bienestar" element={<Bienestar/>} />
+            <Route path="/ejercicio" element={<Ejercicio/>} />
       </Routes>
 
     </BrowserRouter>

@@ -1,6 +1,6 @@
-export { default as Bienestar } from './Bienestar';
-export { default as Ejercicio } from './Ejercicio';
-export { default as Tareas } from './Tareas';
-export { default as Estudios} from './Estudios';
-export { default as Trabajo} from './Trabajo';
-export { default as Finanzas} from './Finanzas';
+export { default as Bienestar } from './bienestar/Bienestar';
+export { default as Ejercicio } from './ejercicio/Ejercicio';
+export { default as Estudios} from './estudios/Estudios';
+export { default as Trabajo} from './trabajo/Trabajo';
+
+// 

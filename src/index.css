@@ -59,3 +59,7 @@ div#root {
 .navbar.navbar-expand-lg.bg-dark {
   padding-right: 10px;
 }
+
+.container.mt-4 h1,p {
+  color: white;
+}
