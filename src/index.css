@@ -63,3 +63,25 @@ div#root {
 .container.mt-4 h1,p {
   color: white;
 }
+
+.taskcard-bg-aqua {
+  background-color: rgb(106, 230, 230);
+}
+
+.taskcard-bg-orange {
+  background-color: rgb(255, 195, 126);
+}
+
+.taskcard-bg-red {
+  background-color: rgb(255, 111, 111);
+}
+
+.taskcard-bg-yellow {
+  background-color: rgb(217, 231, 143);
+}
+
+.taskcard-img-size img{
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: 100px;
+}
