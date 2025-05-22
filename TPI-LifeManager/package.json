@@ -11,10 +11,14 @@
   },
   "dependencies": {
     "bootstrap": "^5.3.5",
+    "express": "^5.1.0",
+    "morgan": "^1.10.0",
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.5.0"
+    "react-router-dom": "^7.5.0",
+    "sequelize": "^6.37.7",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
@@ -26,5 +30,18 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.15.0",
     "vite": "^6.2.0"
-  }
+  },
+  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/facundoMandon/TPI-LifeManager-v_001.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/facundoMandon/TPI-LifeManager-v_001/issues"
+  },
+  "homepage": "https://github.com/facundoMandon/TPI-LifeManager-v_001#readme"
 }
