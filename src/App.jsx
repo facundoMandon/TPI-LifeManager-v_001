@@ -1,9 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-router-dom'; //Importa las rutas para moverme entre componentes
 import 'bootstrap/dist/css/bootstrap.min.css'; //Importa los estilos del css
 import './App.css'
-import {Header, Footer, TaskCard, NavBar} from './components'; //Impota los componentes de ./components
 import {Ejercicio, Bienestar, Estudios, Trabajo} from './sections' //Importa los componentes de ./sections que despues cambio a ./pages
-import Button from 'react-bootstrap/Button'
 import Home from './sections/Home';
 
 

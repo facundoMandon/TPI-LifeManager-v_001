@@ -1,6 +1,7 @@
 import NavBar from './NavBar';
 import Canvas from './OffCanvas';
 
+
 const Header = () => {
 
     return (
@@ -10,8 +11,9 @@ const Header = () => {
                 <img src="/img/lifemanager-icon.png" alt="Icono del sitio" />
                 <h1>LifeManager</h1>
             </div>
-            <NavBar className="navBar-header"></NavBar>
+            <NavBar className="navBar-header"/>
         </div>
+
     );
 };
 
