@@ -3,15 +3,15 @@
 //por lo tanto creo el archivo app.js en el cual voy
 //a guardar la configuracion de express unicamente
 // y index va a ser el encargado de arrancar la aplicacion
-import { sequelize } from "./database/database.js";
-import app from "./app.js"; //importo la app que exporté en app.js
-//dato interesante para aprender. Si los modulos que yo importo (lo que hice arriba)
-//son definidos por mí, como lo es "app.js", debo escribir toda la ruta de donde viene
-//pero si son modulos que instalé por consola, como express, solo con nombrarlo ya es suficiente.
+import sequelize from "./database/database.js";
+import app from "./app.js";
+import Project from "./models/Projects.js";
+import Tasks from "./models/Tasks.js";
+import User from "./models/Users.js";
 
 async function main() {
   try {
-    await sequelize.authenticate();
+    await sequelize.sync({alter: true})
     console.log("La conexión se estableció correctamente.");
     app.listen(4000); //añado el método listen, que por como está definido recibe 1 argumento que es el puerto (3000 en este caso)
     console.log("Servidor ejecutandose en el puerto 4000");
