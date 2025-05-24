@@ -5,9 +5,7 @@
 // y index va a ser el encargado de arrancar la aplicacion
 import sequelize from "./database/database.js";
 import app from "./app.js";
-import Project from "./models/Projects.js";
-import Tasks from "./models/Tasks.js";
-import User from "./models/Users.js";
+import { Section, Entry, Project, Tasks, User } from "./models/index.js";
 
 async function main() {
   try {

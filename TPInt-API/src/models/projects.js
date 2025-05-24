@@ -33,19 +33,14 @@ const Project = sequelize.define(
     description: {
       type: DataTypes.STRING,
     },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   },
   {
     timestamps: true,
   }
 );
 
-Project.hasMany(Tasks, {
-  foreignKey: "projectId",
-  sourceKey: "id",
-});
-
-Tasks.belongsTo(Project, {
-  foreignKey: "projectId",
-  targetId: "id",
-});
 export default Project;
