@@ -1,0 +1,23 @@
+meta {
+  name: getProjects
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:4000/projects
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Hello world",
+    "priority": 10,
+    "description": "New Proyect description"
+  }
+}
