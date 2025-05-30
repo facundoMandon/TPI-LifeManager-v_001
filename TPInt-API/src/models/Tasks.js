@@ -29,6 +29,11 @@ const Tasks = sequelize.define(
       type: DataTypes.INTEGER,
       foreignKey: true,
     },
+    content: {
+  type: DataTypes.TEXT, // para texto largo
+  allowNull: true, // editable desde un "textarea" en el frontend, como si fuera un "notepad" asociado a cada tarea.
+}
+
   },
   {
     timestamps: false,

@@ -33,6 +33,10 @@ const Entry = sequelize.define("entry", {
     type: DataTypes.INTEGER,
     allowNull: false
   },
+  content: {
+  type: DataTypes.TEXT,
+  allowNull: true,
+  },
 });
 
 
