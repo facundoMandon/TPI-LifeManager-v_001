@@ -1,8 +1,8 @@
 import sequelize from "../database/database.js";
 import { DataTypes } from "sequelize";
-import Entry from "./entry.js";
+import { Entry } from "./entry.js";
 
-const Section = sequelize.define("section", {
+export const Section = sequelize.define("section", {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -17,6 +17,3 @@ const Section = sequelize.define("section", {
     allowNull: false
   },
 });
-
-
-export default Section;

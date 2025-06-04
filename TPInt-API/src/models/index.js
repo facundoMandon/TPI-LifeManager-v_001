@@ -3,11 +3,11 @@
 // y tambien me aseguro que todo se exporte al mismo tiempo, y no una tabla primero y luego otra
 // pues eso daria lugar a espacios vacios o undefined en ciertos casos.
 
-import Project from "./Projects.js";
-import Section from "./Section.js";
-import Tasks from "./Tasks.js";
-import Entry from "./entry.js";
-import User from "./Users.js";
+import { Section }  from "./Section.js";
+import { Project }  from "./Projects.js";
+import { Tasks }  from "./Tasks.js";
+import { Entry }  from "./entry.js";
+import { User }  from "./Users.js";
 
 // Relaciones
 //Relacion Section-Entry

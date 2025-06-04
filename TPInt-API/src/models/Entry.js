@@ -1,8 +1,8 @@
 import sequelize from "../database/database.js";
 import { DataTypes } from "sequelize";
-import Section from "./Section.js";
+import { Section } from "./Section.js";
 
-const Entry = sequelize.define("entry", {
+export const Entry = sequelize.define("entry", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -22,8 +22,10 @@ const Entry = sequelize.define("entry", {
     type: DataTypes.DATE,
     allowNull: false,
   },
-  priority: {
-    type: DataTypes.ENUM("alta", "media", "baja"),
+    priority: {
+      type: DataTypes.ENUM(1, 2, 3), // 1: alta, 2: media, 3: baja
+      allowNull: false,
+      defaultValue: 2 // valor por defecto es media
   },
   state: {
     type: DataTypes.ENUM("pendiente", "completado", "vencido"),
@@ -38,7 +40,3 @@ const Entry = sequelize.define("entry", {
   allowNull: true,
   },
 });
-
-
-
-export default Entry;

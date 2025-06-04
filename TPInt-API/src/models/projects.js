@@ -1,13 +1,13 @@
 import { INTEGER, Sequelize } from "sequelize";
 import sequelize from "../database/database.js";
 import { DataTypes } from "sequelize";
-import Tasks from "./Tasks.js";
+import { Tasks } from "./Tasks.js";
 // esto es solo el esquema de la tabla
 //pero la tabla todavía no está creada. Este es solo el esqueleto.
 // el metodo "sequelize.define recibe tres argumentos" sequelize.define('nombreTabla', objeto, opciones)
 //objeto va a tener los tipos de datos que va a guardar la tabla (ejemplo {id: {type: DataTypes.INTEGER, autoincrement:true, primaryKey: true}})
 //como tercer argumento (es opcional), vamos a poner las opciones del tipo "timestamps: false" o similar.
-const Project = sequelize.define(
+export const Project = sequelize.define(
   "projects",
   {
     id: {
@@ -28,7 +28,9 @@ const Project = sequelize.define(
       type: DataTypes.STRING,
     },
     priority: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.ENUM(1, 2, 3), // 1: alta, 2: media, 3: baja
+      allowNull: false,
+      defaultValue: 2 // valor por defecto es media
     },
     description: {
       type: DataTypes.STRING,
@@ -43,4 +45,3 @@ const Project = sequelize.define(
   }
 );
 
-export default Project;

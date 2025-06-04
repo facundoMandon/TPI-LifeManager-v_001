@@ -1,5 +1,5 @@
 import { where } from 'sequelize';
-import Tasks from '../models/Tasks.js';
+import { Tasks } from '../models/Tasks.js';
 
 export const getTasks = async (req, res) => {
     try {

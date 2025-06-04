@@ -1,8 +1,8 @@
 import sequelize from "../database/database.js";
 import { DataTypes } from "sequelize";
-import Section from "./Section.js";
+import { Section } from "./Section.js";
 
-const User = sequelize.define("user", {
+export const User = sequelize.define("user", {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -40,4 +40,3 @@ Section.belongsTo(User, {
   targetId: "id"
 })
 
-export default User;

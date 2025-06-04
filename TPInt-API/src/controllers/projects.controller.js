@@ -1,8 +1,8 @@
 import { where } from 'sequelize';
-import Project from '../models/Projects.js';
+import { Project } from '../models/Projects.js';
 
 export const getProjects = async (req, res) => {
-  const projects = await Project.finnAll();
+  const projects = await Project.findAll();
   console.log("Projects:", projects);
   res.json(projects);
 }

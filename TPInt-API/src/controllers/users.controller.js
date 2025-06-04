@@ -1,7 +1,7 @@
 import { where } from 'sequelize';
 import { User } from '../models/Users.js';
 
-export const createUser = async (req, res) => {
+/*export const createUser = async (req, res) => {
     try {
         const { name, email, password, rol } = req.body;
         if (!name || !email || !password) {
@@ -26,7 +26,38 @@ export const createUser = async (req, res) => {
         console.error('Error creating user:', error);
         res.status(500).send('Internal Server Error');
     }
+};*/
+
+import bcrypt from 'bcrypt';
+
+export const createUser = async (req, res) => {
+  try {
+    const { name, email, password, rol } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).send('Faltan campos obligatorios');
+    }
+
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).send('El usuario ya existe');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      rol,
+    });
+
+    res.status(201).json({ user: newUser });
+  } catch (error) {
+    console.error('Error al crear usuario:', error);
+    res.status(500).send('Error interno del servidor');
+  }
 };
+
 
 export const getUsers = async (req, res) => {
     try {
@@ -71,7 +102,7 @@ export const updateUser = async (req, res) => {
 }
 
 export const deleteUser = async (req, res) => {
-    const { id } = req.params; // Obtengo el id del usuario desde los parámetros de la solicitud
+    const id = parseInt(req.params.id, 10); // Obtengo el id del usuario desde los parámetros de la solicitud
     try {
         const deleted = await User.destroy({ // Elimino el usuario por su id
             where: { id } // donde id es el id del usuario a eliminar

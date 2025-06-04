@@ -1,7 +1,7 @@
 import sequelize from "../database/database.js";
 import { DataTypes } from "sequelize";
 
-const Tasks = sequelize.define(
+export const Tasks = sequelize.define(
   "Task",
   {
     id: {
@@ -40,4 +40,3 @@ const Tasks = sequelize.define(
   }
 );
 
-export default Tasks;

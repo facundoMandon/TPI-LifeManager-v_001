@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const TaskCard= ({title, description, path, bgClass, imgSrc}) => {
   return (
-    <Card className={bgClass} style={{ width: '18rem' }}>
+    <Card className={`${bgClass} hover-scale p-4 rounded`} style={{ width: '18rem' }}>
       <Card.Img className="mx-auto d-block" variant="top" src={imgSrc} alt={`Imagen de ${title}`} />
       <Card.Body>
         <Card.Title>{title}</Card.Title>

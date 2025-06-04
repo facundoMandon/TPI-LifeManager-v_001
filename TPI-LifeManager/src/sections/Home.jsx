@@ -7,10 +7,7 @@ import taskCardsData from '../components/TaskCardData';
 const Home = () => {
     return (
       <div className="container mt-4">
-        <Header/>
         <Carrusel/>
-        <h1>Bienvenido a tu organizador de vida</h1>
-        <p>Elegí una sección para comenzar: estudios, trabajo o ejercicio.</p>
         <main>
           <div className="d-flex flex-wrap gap-4 justify-content-center p-4 taskcard-img-size">
             {taskCardsData.map((card) => (

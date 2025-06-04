@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: http://localhost:4000/projects
+  url: http://localhost:4000/users
   body: json
   auth: inherit
 }
@@ -15,10 +15,9 @@ headers {
 }
 
 body:json {
-  {
-    "name": "Hello world",
-    "priority": 10,
-    "description": "New Proyect description",
-    "userId": 1
+  { "name": "Facundo121",
+    "email": "facundo1-mandon@hotmail.com",
+    "password": 12345,
+     "rol": "usuario"
   }
 }

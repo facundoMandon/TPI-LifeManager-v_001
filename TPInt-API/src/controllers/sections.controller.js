@@ -1,5 +1,5 @@
 import { where } from 'sequelize';
-import Section from '../models/Section.js';
+import { Section } from '../models/Section.js';
 
 export const getSections = async (req, res) => { //solo para el administrador, para ver todas las secciones
     try {
