@@ -15,9 +15,9 @@ export const getSections = async (req, res) => { //solo para el administrador, p
 export const createSection = async (req, res) => {
     try {
         console.log("REQ.BODY COMPLETO:", req.body);
-        const { name, description, userId } = req.body;
-        if (!name || !description || !userId) {
-            return res.status(400).send('Name, description, and userId are required');
+        const { name, userId } = req.body;
+        if (!name || !userId) {
+            return res.status(400).send('Name and userId are required');
         }
         // Check if the section already exists
         const existingSection = await Section.findOne({
@@ -29,7 +29,6 @@ export const createSection = async (req, res) => {
         // Create a new section
         const newSection = await Section.create({
             name,
-            description,
             userId,
         });
         res.json(newSection);

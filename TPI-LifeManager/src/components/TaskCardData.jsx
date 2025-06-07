@@ -17,14 +17,6 @@ const taskCardsData = [
   },
   {
      id: 3,
-    bgClass: "taskcard-bg-aqua",
-    title: "Bienestar",
-    description: "Cacahuate",
-    path: "/Bienestar",
-    imgSrc: "/img/bienestar.jpg"
-  },
-  {
-     id: 4,
     bgClass: "taskcard-bg-red",
     title: "Trabajo",
     description: "Cacahuate",

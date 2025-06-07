@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import { Ejercicio, Bienestar, Estudios, Trabajo } from "./sections";
+import { Ejercicio, Estudios, Trabajo } from "./sections";
 import Login from "./sections/login/login.jsx";
 import Register from "./sections/register/register.jsx";
 import Home from "./sections/Home";
@@ -46,7 +46,6 @@ const AppContent = () => {
           <Route index element={<Tasks />} />
           <Route path="crear" element={<CreateTask />} />
         </Route>
-        <Route path="/bienestar" element={<Bienestar />} />
         <Route path="/ejercicio" element={<Ejercicio />} />
         <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
         <Route path="/register" element={<Register />} />
