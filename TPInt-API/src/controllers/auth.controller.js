@@ -32,6 +32,9 @@ export const login = async (req, res) => {
     };
 
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '2h' });
+console.log("Payload usado para token:", payload);
+console.log("Token generado:", token);
+
 
     // ✅ Datos del usuario sin contraseña
     const userData = {
@@ -72,6 +75,17 @@ export const registerUser = async (req, res) => {
       rol
     });
 
+    // ✅ Generar token
+    const payload = {
+      id: newUser.id,
+      rol: newUser.rol,
+      email: newUser.email
+    };
+    
+
+    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '2h' });
+
+    // ✅ Enviar token + datos
     res.status(201).json({
       message: 'Usuario creado exitosamente',
       user: {
@@ -79,7 +93,8 @@ export const registerUser = async (req, res) => {
         name: newUser.name,
         email: newUser.email,
         rol: newUser.rol
-      }
+      },
+      token // ⬅️ devolvemos el token
     });
   } catch (error) {
     console.error('Error en registro:', error);

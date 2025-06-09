@@ -11,12 +11,12 @@ import { verifyToken } from "../middleware/verifyToken.js";
 import { requireRole } from "../middleware/require.role.js";
 const router = Router();
 
-router.get("/", getProjects, verifyToken, requireRole("admin")); // Ruta para obtener todos los proyectos, solo accesible por admin
-router.get("/:id", getProjectbyId, verifyToken);
-router.get("/user/:userId", getProjectsByUserId, verifyToken);
-router.post("/", createProject, verifyToken, requireRole("admin")); // Ruta para crear un proyecto, solo accesible por admin
-router.put("/:id", updateProject, verifyToken);
-router.delete("/:id", deleteProject, verifyToken, requireRole("admin")); // Ruta para eliminar un proyecto, solo accesible por admin
+router.get("/", verifyToken, requireRole('admin'), getProjects); // Ruta para obtener todos los proyectos, solo accesible por admin
+router.get("/:id", verifyToken, getProjectbyId);
+router.get("/user/:userId", verifyToken, getProjectsByUserId);
+router.post("/", verifyToken, requireRole('admin'), createProject ); // Ruta para crear un proyecto, solo accesible por admin
+router.put("/:id", verifyToken, updateProject);
+router.delete("/:id", verifyToken, requireRole('admin'), deleteProject); // Ruta para eliminar un proyecto, solo accesible por admin
 
 
 export default router;

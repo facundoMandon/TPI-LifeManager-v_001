@@ -54,12 +54,6 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
                 <Link className="dropdown-item" to="/trabajo">
                   Trabajo
                 </Link>
-<<<<<<< HEAD
-=======
-                <Link className="dropdown-item" to="/ejercicio">
-                  Ejercicio
-                </Link>
->>>>>>> 75f8a88df3559bb996e023b38894dec0910661b6
                 <div className="dropdown-divider"></div>
               </div>
             </li>

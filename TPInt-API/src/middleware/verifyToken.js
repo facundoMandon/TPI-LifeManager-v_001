@@ -1,21 +1,24 @@
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
+dotenv.config();
 const SECRET_KEY = process.env.SECRET_KEY;
 
 export const verifyToken = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const authHeader = req.headers['authorization']; // <-- buscamos el header
+  const token = authHeader && authHeader.split(' ')[1]; // <-- extraemos el token
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Token no proporcionado o mal formado" });
+  if (!token) {
+    return res.status(401).json({ message: 'Token no proporcionado' });
   }
-
-  const token = authHeader.split(" ")[1];
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    return res.status(403).json({ message: "Token inválido o expirado" });
+    console.log("🔐 Token decodificado:", decoded); // 👈 clave para debug
+    req.user = decoded; // lo guardamos en el request
+    next(); // continuamos con el siguiente middleware o controlador
+  } catch (error) {
+    console.error("❌ Error al verificar token:", error.message);
+    return res.status(403).json({ message: 'Token inválido' });
   }
 };

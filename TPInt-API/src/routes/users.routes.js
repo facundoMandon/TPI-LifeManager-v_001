@@ -18,9 +18,9 @@ router.get(
 ); // Solo para el administrador
 router.get("/:id", verifyToken, getUserById); // Solo para el administrador
 router.get("/email/:email", verifyToken, getUserByEmail); // Solo para el administrador
-router.post("/", verifyToken, createUser); // Solo para el administrador
+router.post("/", createUser); // Solo para el administrador
 router.put("/:id", verifyToken, updateUser); // Solo para el administrador
-router.delete("/:id", verifyToken, requireRole, deleteUser); // Solo para el administrador
+router.delete("/:id", requireRole, verifyToken, deleteUser); // Solo para el administrador
 router.get("/test", (req, res) => {
   res.json({ message: "Ruta /users/test funcionando!" });
 });

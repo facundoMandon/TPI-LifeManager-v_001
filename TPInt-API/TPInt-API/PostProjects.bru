@@ -5,20 +5,25 @@ meta {
 }
 
 post {
-  url: http://localhost:4000/login/auth
+  url: http://localhost:4000/projects
   body: json
   auth: inherit
 }
 
 headers {
   Content-Type: application/json
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoiYWRtaW4iLCJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSIsImlhdCI6MTc0OTQ4MDYwMiwiZXhwIjoxNzQ5NDg3ODAyfQ.7hn8cZDi8aGZU706jy8a1qoLNeo68waErF38uWrPRag
 }
 
 body:json {
   {
-    "name": "Juan Pérez",
-    "email": "juan@ex2ample.com",
-    "password": "123456",
-    "rol": "user"
+    "name": "ProyectoPruebas",
+    "initDate": "",
+    "endDate": "",
+    "state": "En progreso",
+    "priority": 1,
+    "description": "awa",
+    "userId": 1
+  
   }
 }

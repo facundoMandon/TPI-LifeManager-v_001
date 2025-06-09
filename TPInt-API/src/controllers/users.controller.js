@@ -1,34 +1,6 @@
-import { where } from 'sequelize';
 import { User } from '../models/Users.js';
-
-/*export const createUser = async (req, res) => {
-    try {
-        const { name, email, password, rol } = req.body;
-        if (!name || !email || !password) {
-            return res.status(400).send('Name, email, and password are required');
-        }
-        // Check if the user already exists
-        const existingUser = await User.findOne({
-            where: { email },
-        });
-        if (existingUser) {
-            return res.status(400).send('User already exists');
-        }
-        // Create a new user
-        const newUser = await User.create({
-            name,
-            email,
-            password,
-            rol,
-        });
-        res.json(newUser);
-    } catch (error) {
-        console.error('Error creating user:', error);
-        res.status(500).send('Internal Server Error');
-    }
-};*/
-
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken'; // 👈 Importá JWT
 
 export const createUser = async (req, res) => {
   try {
@@ -51,13 +23,29 @@ export const createUser = async (req, res) => {
       rol,
     });
 
-    res.status(201).json({ user: newUser });
+    // ✅ Crear token JWT
+    const token = jwt.sign(
+      { id: newUser.id, rol: newUser.rol },
+      process.env.JWT_SECRET || "secreto", // ← usa .env o fallback para desarrollo
+      { expiresIn: "1h" }
+    );
+
+    res.status(201).json({
+      message: "Usuario creado exitosamente",
+      user: {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        rol: newUser.rol,
+      },
+      token, // ← 🔥 Devolvés el token
+    });
+
   } catch (error) {
     console.error('Error al crear usuario:', error);
     res.status(500).send('Error interno del servidor');
   }
 };
-
 
 export const getUsers = async (req, res) => {
     try {

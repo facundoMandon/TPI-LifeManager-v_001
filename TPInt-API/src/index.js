@@ -8,7 +8,7 @@ import app from "./app.js";
 import "./models/index.js";
 async function main() {
   try {
-    await sequelize.sync({force: true})
+    await sequelize.sync({alter: true})
     console.log("La conexión se estableció correctamente.");
     app.listen(4000); //añado el método listen, que por como está definido recibe 1 argumento que es el puerto (3000 en este caso)
     console.log("Servidor ejecutandose en el puerto 4000");

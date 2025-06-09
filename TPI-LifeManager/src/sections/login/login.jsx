@@ -8,38 +8,39 @@ const Login = ({ setIsLoggedIn }) => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
 
-  try {
-    const res = await fetch("http://localhost:4000/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      console.log("Login attempt:", email, password);
+      const res = await fetch("http://localhost:4000/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      throw new Error(data.message || "Error al iniciar sesión");
+      if (!res.ok) {
+        throw new Error(data.message || "Error al iniciar sesión");
+      }
+
+      localStorage.setItem("user", JSON.stringify(data.user)); // 👈 NUEVO
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("rol", data.user.rol); // (opcional; ya está en user.rol)
+      localStorage.setItem("isLoggedIn", "true");
+      console.log("Login exitoso:", data.user);
+      setIsLoggedIn(true);
+
+      setEmail("");
+      setPassword("");
+
+      navigate("/");
+    } catch (err) {
+      setError(err.message);
     }
-
-    // ✅ Guardar token y rol correctamente
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("rol", data.user.rol); // ← corregido
-    localStorage.setItem("isLoggedIn", "true");
-    setIsLoggedIn(true);
-
-    // 🧼 Limpiar campos (opcional)
-    setEmail("");
-    setPassword("");
-
-    navigate("/");
-  } catch (err) {
-    setError(err.message);
-  }
-};
+  };
 
   return (
     <div
@@ -87,10 +88,17 @@ const Login = ({ setIsLoggedIn }) => {
             />
           </Form.Group>
 
-          <Button variant="primary" type="submit" className="w-100">
+          <Button variant="primary" type="submit" className="w-100 mb-3">
             Iniciar Sesión
           </Button>
         </Form>
+
+        <div className="text-center">
+          <span>¿No estás registrado? </span>
+          <Button variant="link" onClick={() => navigate("/register")}>
+            Registrate
+          </Button>
+        </div>
       </Container>
     </div>
   );
