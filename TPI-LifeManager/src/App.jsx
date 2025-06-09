@@ -1,12 +1,7 @@
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  useLocation,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import { Ejercicio, Bienestar, Estudios, Trabajo } from "./sections";
+import { Estudios, Trabajo } from "./sections";
 import Login from "./sections/login/login.jsx";
 import Register from "./sections/register/register.jsx";
 import Home from "./sections/Home";
@@ -15,6 +10,8 @@ import Tasks from "./sections/tareas/Tasks.jsx";
 import CreateTask from "./sections/tareas/create_tasks.jsx";
 import Header from "./components/Header.jsx";
 import { useState, useEffect } from "react";
+import ProtectedRoute from "./components/protectedRoutes.jsx"; // Importar el componente ProtectedRoute
+import NotFound from "./components/NotFound.jsx"; // Importar el componente NotFound
 
 const AppContent = () => {
   const location = useLocation();
@@ -33,23 +30,76 @@ const AppContent = () => {
       {!shouldHideHeader && (
         <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       )}
-
+      import ProtectedRoute from "./components/ProtectedRoute"; // ...
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/estudios" element={<Estudios />} />
-        <Route path="/estudios/:id/tareas" element={<TasksLayout />}>
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/estudios"
+          element={
+            <ProtectedRoute>
+              <Estudios />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/estudios/:id/tareas"
+          element={
+            <ProtectedRoute>
+              <TasksLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Tasks />} />
-          <Route path="crear" element={<CreateTask />} />
+          <Route
+            path="crear"
+            element={
+              <ProtectedRoute>
+                <CreateTask />
+              </ProtectedRoute>
+            }
+          />
         </Route>
-        <Route path="/trabajo" element={<Trabajo />} />
-        <Route path="/trabajo/:id/tareas" element={<TasksLayout />}>
+
+        <Route
+          path="/trabajo"
+          element={
+            <ProtectedRoute>
+              <Trabajo />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/trabajo/:id/tareas"
+          element={
+            <ProtectedRoute>
+              <TasksLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Tasks />} />
-          <Route path="crear" element={<CreateTask />} />
+          <Route
+            path="crear"
+            element={
+              <ProtectedRoute>
+                <CreateTask />
+              </ProtectedRoute>
+            }
+          />
         </Route>
-        <Route path="/bienestar" element={<Bienestar />} />
-        <Route path="/ejercicio" element={<Ejercicio />} />
-        <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+
+        <Route
+          path="/login"
+          element={<Login setIsLoggedIn={setIsLoggedIn} />}
+        />
         <Route path="/register" element={<Register />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

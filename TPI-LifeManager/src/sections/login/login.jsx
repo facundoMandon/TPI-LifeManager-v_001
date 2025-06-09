@@ -8,33 +8,38 @@ const Login = ({ setIsLoggedIn }) => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
 
-    try {
-      const res = await fetch("http://localhost:4000/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+  try {
+    const res = await fetch("http://localhost:4000/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.message || "Error al iniciar sesión");
-      }
-
-      // Guardar token y marcar como logueado
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("isLoggedIn", "true");
-      setIsLoggedIn(true);
-
-      navigate("/");
-    } catch (err) {
-      setError(err.message);
+    if (!res.ok) {
+      throw new Error(data.message || "Error al iniciar sesión");
     }
-  };
+
+    // ✅ Guardar token y rol correctamente
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("rol", data.user.rol); // ← corregido
+    localStorage.setItem("isLoggedIn", "true");
+    setIsLoggedIn(true);
+
+    // 🧼 Limpiar campos (opcional)
+    setEmail("");
+    setPassword("");
+
+    navigate("/");
+  } catch (err) {
+    setError(err.message);
+  }
+};
 
   return (
     <div

@@ -4,20 +4,12 @@ meta {
   seq: 2
 }
 
-post {
-  url: http://localhost:4000/users
+delete {
+  url: http://localhost:4000/projects/1
   body: json
   auth: inherit
 }
 
 headers {
   Content-Type: application/json
-}
-
-body:json {
-  { "name": "Facundo121",
-    "email": "facundo1-mandon@hotmail.com",
-    "password": 12345,
-     "rol": "usuario"
-  }
 }

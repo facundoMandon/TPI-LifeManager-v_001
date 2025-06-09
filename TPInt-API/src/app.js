@@ -6,8 +6,12 @@ import sectionsRouter from "./routes/sections.routes.js";
 import entriesRouter from "./routes/entries.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import cors from "cors"; //importamos cors para poder hacer peticiones desde el frontend
+import dotenv from "dotenv"; //importamos dotenv para poder usar las variables de entorno
 
 
+
+
+dotenv.config(); //cargamos las variables de entorno desde el archivo .env
 
 const app = express(); //creamos la app que ejecuta express
 

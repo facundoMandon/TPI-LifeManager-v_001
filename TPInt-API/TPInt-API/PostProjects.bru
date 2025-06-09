@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: http://localhost:4000/users
+  url: http://localhost:4000/login/auth
   body: json
   auth: inherit
 }
@@ -15,9 +15,10 @@ headers {
 }
 
 body:json {
-  { "name": "Facundo1",
-    "email": "facundo1-mandon@hotmail.com",
-    "password": 12345,
-     "rol": "usuario"
+  {
+    "name": "Juan Pérez",
+    "email": "juan@ex2ample.com",
+    "password": "123456",
+    "rol": "user"
   }
 }
