@@ -4,7 +4,6 @@ import { Footer, Header } from "../../components";
 const TasksLayout = () => {
   return (
     <div>
-      <Header />
       <main className="container mt-4">
         <Outlet />
       </main>

@@ -152,7 +152,7 @@ setSections(data);
                   <ListGroup.Item
                     key={section.id}
                     action
-                    onClick={() => navigate(`/estudios/${section.id}/tasks`)}
+                    onClick={() => navigate(`/estudios/${section.id}/tasksEst`)}
                     className="d-flex justify-content-between align-items-center"
                   >
                     <div>{section.name}</div>

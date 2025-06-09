@@ -37,7 +37,7 @@ const AppContent = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/estudios" element={<Estudios />} />
-        <Route path="/estudios/:id/tareas" element={<TasksLayout />}>
+        <Route path="/estudios/:id/tasksEst" element={<TasksLayout />}>
           <Route index element={<Tasks />} />
           <Route path="crear" element={<CreateTask />} />
         </Route>
