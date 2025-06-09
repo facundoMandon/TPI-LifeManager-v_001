@@ -7,7 +7,8 @@ import { Section }  from "./Section.js";
 import { Project }  from "./Projects.js";
 import { Tasks }  from "./Tasks.js";
 import { Entry }  from "./entry.js";
-import { User }  from "./Users.js";
+import { User } from "./Users.js";
+import { TasksEst } from "./TasksEst.js";
 
 // Relaciones
 //Relacion Section-Entry
@@ -54,4 +55,28 @@ Section.belongsTo(User, {
     targetKey: "id",
 });
 
-export { Section, Entry, Project, Tasks, User };
+//Relacion Usuario-Tasks
+
+User.hasMany(Tasks, {
+    foreignKey: "userId",
+    sourceKey: "id",
+});
+Tasks.belongsTo(User, {
+    foreignKey: "userId",
+    targetKey: "id",
+});
+
+//Relacion Section-TasksEst
+Section.hasMany(TasksEst, {
+    foreignKey: "sectionId",
+    sourceKey: "id",
+});
+TasksEst.belongsTo(Section, {
+    foreignKey: "sectionId",
+    targetKey: "id",
+});
+
+
+
+
+export { Section, Entry, Project, Tasks, User, TasksEst };

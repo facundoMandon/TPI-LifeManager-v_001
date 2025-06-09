@@ -1,7 +1,11 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
+<<<<<<< HEAD
 import { Estudios, Trabajo } from "./sections";
+=======
+import { Ejercicio, Estudios, Trabajo } from "./sections";
+>>>>>>> 75f8a88df3559bb996e023b38894dec0910661b6
 import Login from "./sections/login/login.jsx";
 import Register from "./sections/register/register.jsx";
 import Home from "./sections/Home";
@@ -32,6 +36,7 @@ const AppContent = () => {
       )}
       import ProtectedRoute from "./components/ProtectedRoute"; // ...
       <Routes>
+<<<<<<< HEAD
         <Route
           path="/"
           element={
@@ -56,6 +61,11 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         >
+=======
+        <Route path="/" element={<Home />} />
+        <Route path="/estudios" element={<Estudios />} />
+        <Route path="/estudios/:id/tasksEst" element={<TasksLayout />}>
+>>>>>>> 75f8a88df3559bb996e023b38894dec0910661b6
           <Route index element={<Tasks />} />
           <Route
             path="crear"
@@ -93,11 +103,16 @@ const AppContent = () => {
             }
           />
         </Route>
+<<<<<<< HEAD
 
         <Route
           path="/login"
           element={<Login setIsLoggedIn={setIsLoggedIn} />}
         />
+=======
+        <Route path="/ejercicio" element={<Ejercicio />} />
+        <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+>>>>>>> 75f8a88df3559bb996e023b38894dec0910661b6
         <Route path="/register" element={<Register />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

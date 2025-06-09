@@ -1,241 +1,192 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Footer, Header } from "../../components";
+import { Footer } from "../../components";
+import { Form, Button, ListGroup } from "react-bootstrap";
 
-// Cambia la URL base según tu backend
-const API_URL = "http://localhost:4000/projects";
+// URL del backend (asegúrate que sea correcto)
+const API_URL = "http://localhost:4000/sections";
 
 const Estudios = () => {
-  const [projects, setProjects] = useState([]);
-  const [name, setName] = useState("");
-  const [initDate, setInitDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [state, setState] = useState("");
-  const [priority, setPriority] = useState("");
-  const [description, setDescription] = useState("");
+  const [sections, setSections] = useState([]);
+  const [form, setForm] = useState({ name: "" });
+  const [errors, setErrors] = useState({});
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
+  // Suponemos que tenés un userId (puede venir de contexto o localStorage)
+  const userId = 1;
+
   useEffect(() => {
-    fetchProjects();
+    fetchSections();
   }, []);
 
-  const fetchProjects = async () => {
+  const fetchSections = async () => {
     setLoading(true);
     try {
-      const res = await fetch(API_URL);
-      const data = await res.json();
-      setProjects(data);
+      const res = await fetch(`${API_URL}/user/${userId}`);
+const data = await res.json();
+setSections(data);
+
     } catch (e) {
-      setProjects([]);
+      console.error("Error al obtener las secciones", e);
+      setSections([]);
     }
     setLoading(false);
   };
 
+  const validate = () => {
+    const newErrors = {};
+    if (!form.name.trim()) newErrors.name = "Este campo es obligatorio";
+    return newErrors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name || !initDate || !state || !priority) return;
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
 
     const body = {
-      name,
-      initDate,
-      endDate: endDate || null,
-      state,
-      priority: Number(priority),
-      description,
-      // userId: ... // Si tienes el userId, agrégalo aquí
+      name: form.name.trim(),
+      userId,
     };
 
-    if (editId) {
-      await fetch(`${API_URL}/${editId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-    } else {
-      await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+    try {
+      if (editId) {
+        await fetch(`${API_URL}/${editId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+      } else {
+        await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+      }
+
+      setForm({ name: "" });
+      setEditId(null);
+      setErrors({});
+      fetchSections();
+    } catch (error) {
+      console.error("Error al guardar la sección", error);
     }
-    setName("");
-    setInitDate("");
-    setEndDate("");
-    setState("");
-    setPriority("");
-    setDescription("");
-    setEditId(null);
-    fetchProjects();
+  };
+
+  const handleEdit = (section) => {
+    setForm({ name: section.name });
+    setEditId(section.id);
+    setErrors({});
   };
 
   const handleDelete = async (id) => {
-    await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-    fetchProjects();
+    try {
+      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      fetchSections();
+    } catch (error) {
+      console.error("Error al eliminar la sección", error);
+    }
   };
 
-  const handleEdit = (project) => {
-    setName(project.name || "");
-    setInitDate(project.initDate ? project.initDate.slice(0, 10) : "");
-    setEndDate(project.endDate ? project.endDate.slice(0, 10) : "");
-    setState(project.state || "");
-    setPriority(project.priority ? String(project.priority) : "");
-    setDescription(project.description || "");
-    setEditId(project.id);
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   return (
-    <>
-    
-      <div className="container text-white">
-        <h1 className="text-center my-4 text-white">Estudios</h1>
-        <p className="text-center">Aquí puedes gestionar tus estudios.</p>
-        <div className="row">
-          <div className="col-md-6">
-            <h2>{editId ? "Editar Estudio" : "Agregar Estudio"}</h2>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <label htmlFor="name" className="form-label">
-                  Nombre del Estudio
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="initDate" className="form-label">
-                  Fecha de Inicio
-                </label>
-                <input
-                  type="date"
-                  className="form-control"
-                  id="initDate"
-                  value={initDate}
-                  onChange={(e) => setInitDate(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="endDate" className="form-label">
-                  Fecha de Finalización
-                </label>
-                <input
-                  type="date"
-                  className="form-control"
-                  id="endDate"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-              </div>
-              {/* Estado eliminado del formulario */}
-              <div className="mb-3">
-                <label htmlFor="priority" className="form-label">
-                  Prioridad
-                </label>
-                <input
-                  type="number"
-                  className="form-control"
-                  id="priority"
-                  value={priority}
-                  onChange={(e) => setPriority(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="description" className="form-label">
-                  Descripción
-                </label>
-                <textarea
-                  className="form-control"
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
-              <button type="submit" className="btn btn-primary">
-                {editId ? "Guardar Cambios" : "Agregar"}
-              </button>
-              {editId && (
-                <button
-                  type="button"
-                  className="btn btn-secondary ms-2"
-                  onClick={() => {
-                    setEditId(null);
-                    setName("");
-                    setInitDate("");
-                    setEndDate("");
-                    setPriority("");
-                    setDescription("");
-                  }}
-                >
-                  Cancelar
-                </button>
-              )}
-            </form>
-          </div>
-          <div className="col-md-6">
-            <h2>Lista de Estudios</h2>
-            {loading ? (
-              <p>Cargando...</p>
-            ) : (
-              <div className="row">
-                {projects.map((project) => (
-                  <div className="col-12 mb-3" key={project.id}>
-                    <div className="card">
-                      <div className="card-body">
-                        <h5
-                          className="card-title"
-                          style={{ cursor: "pointer" }}
-                          onClick={() =>
-                            navigate(`/estudios/project${project.id}`)
-                          }
-                        >
-                          {project.name}
-                        </h5>
-                        <h6 className="card-subtitle mb-2 text-muted">
-                          Estado: {project.state} | Prioridad:{" "}
-                          {project.priority}
-                        </h6>
-                        <p className="mb-1">
-                          Inicio:{" "}
-                          {project.initDate
-                            ? project.initDate.slice(0, 10)
-                            : "-"}
-                          <br />
-                          Fin:{" "}
-                          {project.endDate ? project.endDate.slice(0, 10) : "-"}
-                        </p>
-                        <p className="mb-1">{project.description}</p>
-                        <button
-                          className="btn btn-sm btn-info me-2"
-                          onClick={() => handleEdit(project)}
-                        >
-                          Editar
-                        </button>
-                        <button
-                          className="btn btn-sm btn-danger"
-                          onClick={() => handleDelete(project.id)}
-                        >
-                          Eliminar
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                {projects.length === 0 && (
-                  <p className="text-muted">No hay estudios cargados.</p>
-                )}
-              </div>
+    <div className="container text-white">
+      <h1 className="text-center my-4">Estudios</h1>
+      <p className="text-center">
+        Aquí puedes gestionar tus estudios (secciones).
+      </p>
+
+      <div className="row">
+        <div className="col-md-6">
+          <h2>{editId ? "Editar Estudio" : "Agregar Estudio"}</h2>
+          <Form onSubmit={handleSubmit} noValidate>
+            <Form.Group className="mb-3">
+              <Form.Label>Nombre del Estudio</Form.Label>
+              <Form.Control
+                type="text"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                isInvalid={!!errors.name}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.name}
+              </Form.Control.Feedback>
+            </Form.Group>
+
+            <Button type="submit" variant="primary">
+              {editId ? "Guardar Cambios" : "Agregar"}
+            </Button>
+            {editId && (
+              <Button
+                type="button"
+                variant="secondary"
+                className="ms-2"
+                onClick={() => {
+                  setForm({ name: "" });
+                  setEditId(null);
+                  setErrors({});
+                }}
+              >
+                Cancelar
+              </Button>
             )}
-          </div>
+          </Form>
         </div>
-        {/* El resto de la página igual que antes */}
+
+        <div className="col-md-6">
+          <h2>Lista de Estudios</h2>
+          {loading ? (
+            <p>Cargando...</p>
+          ) : (
+            <ListGroup variant="flush">
+              {sections.length > 0 ? (
+                sections.map((section) => (
+                  <ListGroup.Item
+                    key={section.id}
+                    action
+                    onClick={() => navigate(`/estudios/${section.id}/tasksEst`)}
+                    className="d-flex justify-content-between align-items-center"
+                  >
+                    <div>{section.name}</div>
+                    <div>
+                      <Button
+                        variant="info"
+                        size="sm"
+                        className="me-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(section);
+                        }}
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(section.id);
+                        }}
+                      >
+                        Eliminar
+                      </Button>
+                    </div>
+                  </ListGroup.Item>
+                ))
+              ) : (
+                <p className="text-muted">No hay estudios cargados.</p>
+              )}
+            </ListGroup>
+          )}
+        </div>
         <div className="my-4">
           <h2>Información Adicional</h2>
           <p>
@@ -304,8 +255,9 @@ const Estudios = () => {
           </p>
         </div>
       </div>
+
       <Footer texto="© 2025 Mi Organizador. Todos los derechos reservados." />
-    </>
+    </div>
   );
 };
 
