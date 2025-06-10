@@ -30,13 +30,4 @@ export const User = sequelize.define("user", {
   },
 });
 
-User.hasMany(Section, {
-  foreignKey: "userId",
-  sourceKey: "id"
-})
-
-Section.belongsTo(User, {
-  foreignKey: "userId",
-  targetId: "id"
-})
 

@@ -1,7 +1,8 @@
+// src/routes/tasks.routes.js
 import { Router } from "express";
 import {
   getTaskById,
-  getTasks,
+  getTasksByProjectId, // Nueva importación para la ruta por proyecto
   getTasksByUserId,
   updateTask,
   createTask,
@@ -12,11 +13,11 @@ import { verifyToken } from "../middleware/verifyToken.js";
 
 const router = Router();
 
-router.get("/", getTasks, requireRole, verifyToken); // Obtiene todas las tareas
-router.get("/:id", getTaskById, verifyToken); // Obtiene una tarea por su ID
-router.get("/user/:userId", getTasksByUserId, verifyToken); // Obtiene todas las tareas de un usuario específico
-router.post("/", createTask, verifyToken); // Crea una nueva tarea
-router.put("/:id", updateTask, verifyToken); // Actualiza una tarea existente por su ID
-router.delete("/:id", deleteTask, verifyToken); // Elimina una tarea por su ID
+router.get("/:id", verifyToken, getTaskById);
+router.get("/project/:projectId", verifyToken, getTasksByProjectId);
+router.get("/user/:userId", verifyToken, getTasksByUserId);
+router.post("/:projectId", verifyToken, createTask);
+router.put("/:id", verifyToken, updateTask);
+router.delete("/:id", verifyToken, requireRole(["superadmin", "admin"]), deleteTask);
 
 export default router;

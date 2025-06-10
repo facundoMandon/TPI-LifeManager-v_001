@@ -1,0 +1,120 @@
+/* src/pages/Trabajo/Trabajo.css */
+
+/* Estilos básicos para el contenedor del calendario */
+.custom-calendar-container {
+    background-color: #2c2c2c; /* Fondo oscuro para el calendario */
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Sobrescribir estilos de react-calendar */
+.react-calendar {
+    width: 100%;
+    border: none; /* Eliminar el borde predeterminado */
+    font-family: 'Inter', sans-serif;
+    line-height: 1.125em;
+    background-color: #2c2c2c; /* Fondo del calendario */
+    color: white; /* Color de texto general */
+}
+
+.react-calendar__navigation button {
+    color: #fff; /* Color de los botones de navegación */
+    background: none;
+    border-radius: 4px;
+}
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+    background-color: #4a4a4a; /* Fondo al pasar el ratón por los botones de navegación */
+}
+
+.react-calendar__month-view__weekdays {
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 0.75em;
+    color: #bbb; /* Color de los días de la semana */
+}
+
+.react-calendar__month-view__days__day {
+    color: #eee; /* Color de los números de los días */
+}
+
+.react-calendar__tile {
+    max-width: 100%;
+    text-align: center;
+    padding: 7px 0px;
+    background: none;
+    border-radius: 4px;
+    font-size: 0.9em;
+    position: relative; /* Necesario para posicionar el contenido de la tarea */
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+    background-color: #4a4a4a; /* Fondo al pasar el ratón por los días */
+}
+
+.react-calendar__tile--now { /* Día actual */
+    background: rgba(0, 123, 255, 0.4); /* Azul más suave para el día actual */
+    border-radius: 4px;
+}
+
+.react-calendar__tile--active { /* Día seleccionado */
+    background-color: #007bff; /* Azul vibrante para el día activo */
+    color: white;
+}
+
+.react-calendar__tile--hasActive {
+    background-color: #0056b3; /* Color para días que tienen un día activo */
+}
+
+.react-calendar__tile--range {
+    background-color: #007bff; /* Color para rango de fechas */
+    color: white;
+}
+
+.react-calendar__tile--rangeStart,
+.react-calendar__tile--rangeEnd {
+    border-radius: 4px;
+}
+
+/* Estilos para el contenido de la tarea en el calendario */
+.calendar-task-item {
+    font-size: 0.7em; /* Tamaño de fuente más pequeño para la tarea */
+    line-height: 1.2;
+    border-radius: 3px;
+    padding: 1px 3px;
+    margin-top: 2px; /* Espacio entre el número del día y la tarea */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Evita que el texto se rompa */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    font-weight: 500;
+}
+
+/* Asegurar que el calendario y la tabla se distribuyan correctamente en la fila */
+.row > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.row > div > .custom-calendar-container,
+.row > div > .table-responsive {
+    flex-grow: 1; /* Permite que el calendario y la tabla ocupen el espacio disponible */
+}
+
+/* Ajustes para la responsividad del calendario */
+@media (max-width: 767px) {
+    .react-calendar {
+        font-size: 0.8em;
+    }
+    .react-calendar__month-view__weekdays,
+    .react-calendar__navigation__label {
+        font-size: 0.9em;
+    }
+    .calendar-task-item {
+        font-size: 0.65em;
+        padding: 0px 2px;
+    }
+}

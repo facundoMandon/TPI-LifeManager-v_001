@@ -1,7 +1,10 @@
 import { Footer, Header } from "../../components";
 import { useState, useEffect } from "react";
 import { Button, Modal, Form, Table, Badge } from "react-bootstrap";
-import { useNavigate } from "react-router-dom"; // <-- Importa useNavigate
+import { useNavigate } from "react-router-dom";
+import Calendar from 'react-calendar'; // Importa el componente Calendar
+import 'react-calendar/dist/Calendar.css'; // Importa los estilos CSS del calendario
+import "./Trabajo.css"; // Asegúrate de tener un archivo CSS para estilos personalizados
 
 const priorityLabels = ["Baja", "Media", "Alta"];
 
@@ -18,32 +21,120 @@ const Trabajo = () => {
     description: "",
   });
 
-  const navigate = useNavigate(); // <-- Hook para navegación
+  const navigate = useNavigate();
+  const [showAlertModal, setShowAlertModal] = useState(false);
+  const [userRole, setUserRole] = useState(null); // Para almacenar el rol del usuario
+  const [currentUserId, setCurrentUserId] = useState(null); // Para almacenar el ID del usuario actual
+  const [calendarDate, setCalendarDate] = useState(new Date()); // Estado para la fecha actual del calendario
+  const [tasksForCalendar, setTasksForCalendar] = useState([]); // Estado para todas las tareas para el calendario
 
+  // URL del backend para proyectos y tareas
+  const API_PROJECTS_URL = "http://localhost:4000/projects";
+  // --- CAMBIO CLAVE AQUÍ: URL para tareas de un usuario ---
+  const API_TASKS_USER_URL = "http://localhost:4000/tasks/user"; // Nueva URL base para tareas por usuario
+  // --- CAMBIO CLAVE AQUÍ: URL para tareas de un proyecto ---
+  const API_TASKS_PROJECT_URL = "http://localhost:4000/tasks/project"; // Nueva URL base para tareas por proyecto
+
+  // La URL base para crear/editar/eliminar tareas individuales por ID sigue siendo la misma:
+  const API_TASKS_URL = "http://localhost:4000/tasks";
+
+
+  // Función para obtener el token y el ID/rol del usuario
+  const getAuthData = () => {
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!token || !user || !user.id || !user.rol) {
+      console.warn("No hay token o datos de usuario, redirigiendo a login.");
+      navigate("/login");
+      return { token: null, userId: null, userRole: null };
+    }
+
+    return { token, userId: user.id, userRole: user.rol };
+  };
+
+  // useEffect principal para cargar datos al inicio
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        console.log("Token usado:", token);
-        const res = await fetch("http://localhost:4000/projects", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    const { token, userId, userRole } = getAuthData(); // Obtener todo de una vez
+    setCurrentUserId(userId);
+    setUserRole(userRole);
 
-        if (!res.ok) throw new Error("Error al obtener proyectos");
+    if (token && userId) { // Solo intentar cargar datos si hay token y userId válidos
+      fetchProjects(token); // Pasar el token directamente
+      fetchTasksForCalendar(userId, token); // Pasar userId y token directamente
+    }
+  }, []); // Dependencia vacía: se ejecuta solo una vez al montar el componente
 
-        const data = await res.json();
-        setProjects(data);
-      } catch (err) {
-        console.error(err);
+
+  // --- Fetching de Proyectos (Global para todos los usuarios) ---
+  const fetchProjects = async (token) => { // Recibe el token como argumento
+    if (!token) return; // Si no hay token, salir
+
+    try {
+      console.log('Intentando obtener proyectos de:', API_PROJECTS_URL); // Log de depuración
+      const res = await fetch(API_PROJECTS_URL, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status === 401) {
+        alert("Tu sesión ha expirado o es inválida. Por favor, inicia sesión de nuevo.");
+        navigate("/login");
+        return;
       }
-    };
+      if (res.status === 403) {
+        alert("No tienes permiso para ver los proyectos.");
+        setProjects([]);
+        return;
+      }
 
-    fetchProjects();
-  }, []);
+      if (!res.ok) throw new Error("Error al obtener proyectos");
+      const data = await res.json();
+      setProjects(data);
+    } catch (err) {
+      console.error("Error al cargar proyectos:", err);
+      // alert("Error al cargar los proyectos."); // Se comentó para evitar alertas repetitivas
+    }
+  };
+
+  // --- Fetching de Tareas para el Calendario (basado en el usuario actual) ---
+  const fetchTasksForCalendar = async (userId, token) => { // Recibe userId y token como argumentos
+    if (!userId || !token) return; // Si falta userId o token, salir
+
+    try {
+      // --- CAMBIO APLICADO AQUÍ: URL para tareas por usuario ---
+      console.log('Intentando obtener tareas para calendario de:', `${API_TASKS_USER_URL}/${userId}`); // Log de depuración
+      const res = await fetch(`${API_TASKS_USER_URL}/${userId}`, { // URL actualizada
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status === 401) {
+        console.warn("Token expirado o inválido al intentar obtener tareas para el calendario.");
+        setTasksForCalendar([]);
+        // navigate("/login"); // No redirigir aquí para no interrumpir el flujo si ya está en la página
+        return;
+      }
+      if (res.status === 403) {
+        console.warn("No tienes permiso para ver las tareas para el calendario.");
+        setTasksForCalendar([]);
+        return;
+      }
+
+      if (!res.ok) throw new Error("Error al obtener tareas para el calendario");
+      const data = await res.json();
+      setTasksForCalendar(data);
+    } catch (err) {
+      console.error("Error al cargar tareas para el calendario:", err);
+      // setTasksForCalendar([]); // Ya se limpia en caso de 401/403
+      // alert("Error al cargar las tareas del calendario."); // Se comentó
+    }
+  };
+
 
   const handleShowModal = (project = null) => {
+    if (userRole !== "admin" && userRole !== "superadmin") {
+      setShowAlertModal(true);
+      return;
+    }
     setEditingProject(project);
     setForm(
       project
@@ -83,17 +174,25 @@ const Trabajo = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const token = localStorage.getItem("token");
+    const { token } = getAuthData();
+    if (!token) return;
+
     const projectData = {
       ...form,
+      userId: currentUserId, // Los proyectos son específicos del usuario
     };
+
+    if (userRole !== "admin" && userRole !== "superadmin") {
+      alert("Solo los administradores o superadministradores pueden crear/editar proyectos.");
+      return;
+    }
 
     try {
       let res;
       if (editingProject) {
-        // PUT (editar proyecto)
+        console.log('Intentando actualizar proyecto:', `${API_PROJECTS_URL}/${editingProject.id}`); // Log de depuración
         res = await fetch(
-          `http://localhost:4000/projects/${editingProject.id}`,
+          `${API_PROJECTS_URL}/${editingProject.id}`,
           {
             method: "PUT",
             headers: {
@@ -104,11 +203,8 @@ const Trabajo = () => {
           }
         );
       } else {
-        // POST (crear nuevo)
-        console.log("📤 Enviando:", projectData);
-        console.log("🔑 Token:", token);
-
-        res = await fetch("http://localhost:4000/projects", {
+        console.log('Intentando crear proyecto en:', API_PROJECTS_URL); // Log de depuración
+        res = await fetch(API_PROJECTS_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -117,35 +213,52 @@ const Trabajo = () => {
           body: JSON.stringify(projectData),
         });
       }
-      console.log("Headers enviados:", {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      });
+
+      if (res.status === 401) {
+        alert("Tu sesión ha expirado o es inválida. Por favor, inicia sesión de nuevo.");
+        navigate("/login");
+        return;
+      }
+      if (res.status === 403) {
+        alert("No tienes permiso para realizar esta acción.");
+        return;
+      }
+
       if (!res.ok) throw new Error("Error al guardar proyecto");
 
       const savedProject = await res.json();
 
       if (editingProject) {
         setProjects((prev) =>
-          prev.map((p) => (p.id === editingProject.id ? savedProject : p))
+          prev.map((p) => (p.id === savedProject.id ? savedProject : p))
         );
       } else {
         setProjects((prev) => [...prev, savedProject]);
       }
 
       handleCloseModal();
+      fetchProjects(token); // Pasar token al actualizar
+      fetchTasksForCalendar(currentUserId, token); // Pasar userId y token al actualizar
     } catch (err) {
       console.error("Error al guardar proyecto:", err);
+      alert("Ocurrió un error al guardar el proyecto.");
     }
   };
 
   const handleDelete = async (id) => {
+    if (userRole !== "superadmin") {
+      setShowAlertModal(true);
+      return;
+    }
+
     if (!window.confirm("¿Seguro que deseas eliminar este proyecto?")) return;
 
-    const token = localStorage.getItem("token");
+    const { token } = getAuthData();
+    if (!token) return;
 
     try {
-      const res = await fetch(`http://localhost:4000/projects/${id}`, {
+      console.log('Intentando eliminar proyecto:', `${API_PROJECTS_URL}/${id}`); // Log de depuración
+      const res = await fetch(`${API_PROJECTS_URL}/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -153,11 +266,23 @@ const Trabajo = () => {
         },
       });
 
+      if (res.status === 401) {
+        alert("Tu sesión ha expirado o es inválida. Por favor, inicia sesión de nuevo.");
+        navigate("/login");
+        return;
+      }
+      if (res.status === 403) {
+        alert("No tienes permiso para realizar esta acción.");
+        return;
+      }
+
       if (!res.ok) throw new Error("Error al eliminar proyecto");
 
       setProjects((prev) => prev.filter((p) => p.id !== id));
+      fetchTasksForCalendar(currentUserId, token); // Pasar userId y token al actualizar
     } catch (err) {
       console.error(err);
+      alert("Error al eliminar el proyecto.");
     }
   };
 
@@ -165,121 +290,171 @@ const Trabajo = () => {
     navigate(`/project/${id}/tasks`);
   };
 
-  const [showAlertModal, setShowAlertModal] = useState(false);
+  // Función para renderizar el contenido de cada celda del calendario
+  const tileContent = ({ date, view }) => {
+    if (view === 'month') {
+      const dayTasks = tasksForCalendar.filter(task => {
+        const taskInitDate = new Date(task.initDate);
+        return taskInitDate.toDateString() === date.toDateString();
+      });
+
+      return (
+        <div>
+          {dayTasks.map(task => (
+            <div
+              key={task.id}
+              className="calendar-task-item"
+              style={{
+                backgroundColor: task.done ? 'rgba(0, 128, 0, 0.7)' : 'rgba(255, 255, 0, 0.7)',
+                color: task.done ? 'white' : 'black',
+              }}
+              title={task.title + (task.description ? ` - ${task.description}` : '')}
+            >
+              {task.title}
+            </div>
+          ))}
+        </div>
+      );
+    }
+  };
 
   return (
     <>
       <div className="container text-white mt-4 min-vh-100">
-        <div className="mt-4 d-flex flex-column align-items-center">
+        <div className="mt-4">
           <h1 className="text-center mb-4">Trabajo</h1>
           <p className="text-center">
             Aquí puedes gestionar tus tareas laborales, proyectos y horarios.
           </p>
-          <div
-            className="d-flex justify-content-between align-items-center mb-3 w-100"
-            style={{ maxWidth: 1000 }}
-          >
-            <h2 className="mb-0">Proyectos laborales</h2>
-            <Button
-              variant="success"
-              onClick={() => {
-                const user = JSON.parse(localStorage.getItem("user"));
-                if (user?.rol !== "admin") {
-                  setShowAlertModal(true);
-                  return;
-                }
-                handleShowModal();
-              }}
-            >
-              Agregar proyecto
-            </Button>
-          </div>
-          <div className="w-100" style={{ maxWidth: 1000 }}>
-            <Table striped bordered hover variant="dark" responsive>
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Inicio</th>
-                  <th>Fin</th>
-                  <th>Estado</th>
-                  <th>Prioridad</th>
-                  <th>Descripción</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {projects.length === 0 ? (
+          
+          <div className="row" style={{ maxWidth: 1000, margin: '0 auto' }}>
+            {/* Columna del Calendario */}
+            <div className="col-12 col-md-4 mb-4">
+              <h3 className="text-center mb-3">Calendario de Tareas</h3>
+              <div className="custom-calendar-container">
+                <Calendar
+                  onChange={setCalendarDate}
+                  value={calendarDate}
+                  locale="es-ES"
+                  tileContent={tileContent}
+                />
+              </div>
+            </div>
+
+            {/* Columna de la Tabla de Proyectos */}
+            <div className={
+              (userRole === "admin" || userRole === "superadmin")
+                ? "col-12 col-md-8 mb-4"
+                : "col-12 col-md-8 mx-auto mb-4"
+            }>
+              {/* Encabezado con título de proyectos y botón de agregar */}
+              <div
+                className="d-flex justify-content-between align-items-center mb-3"
+              >
+                <h2 className="mb-0">Proyectos laborales</h2>
+                {(userRole === "admin" || userRole === "superadmin") && (
+                  <Button
+                    variant="success"
+                    onClick={() => {
+                      handleShowModal();
+                    }}
+                  >
+                    Agregar proyecto
+                  </Button>
+                )}
+              </div>
+              <Table striped bordered hover variant="dark" responsive>
+                <thead>
                   <tr>
-                    <td colSpan={7} className="text-center">
-                      No hay proyectos aún.
-                    </td>
+                    <th>Nombre</th>
+                    <th>Inicio</th>
+                    <th>Fin</th>
+                    <th>Estado</th>
+                    <th>Prioridad</th>
+                    <th>Descripción</th>
+                    {(userRole === "admin" || userRole === "superadmin") && <th>Acciones</th>}
                   </tr>
-                ) : (
-                  projects.map((project) => (
-                    <tr
-                      key={project.id}
-                      style={{ cursor: "pointer" }}
-                      onClick={() => handleRowClick(project.id)}
-                    >
-                      <td>{project.name}</td>
-                      <td>{project.initDate}</td>
-                      <td>{project.endDate}</td>
-                      <td>
-                        <Badge
-                          bg={
-                            project.state === "En progreso"
-                              ? "primary"
-                              : project.state === "Pendiente"
-                              ? "warning"
-                              : "success"
-                          }
-                        >
-                          {project.state}
-                        </Badge>
-                      </td>
-                      <td>
-                        <Badge
-                          bg={
-                            project.priority === 3
-                              ? "danger"
-                              : project.priority === 2
-                              ? "warning"
-                              : "secondary"
-                          }
-                        >
-                          {priorityLabels[project.priority - 1] || "Baja"}
-                        </Badge>
-                      </td>
-                      <td>{project.description}</td>
-                      <td>
-                        <Button
-                          size="sm"
-                          variant="info"
-                          className="me-2"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleShowModal(project);
-                          }}
-                        >
-                          Editar
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="danger"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(project.id);
-                          }}
-                        >
-                          Eliminar
-                        </Button>
+                </thead>
+                <tbody>
+                  {projects.length === 0 ? (
+                    <tr>
+                      <td colSpan={(userRole === "admin" || userRole === "superadmin") ? 7 : 6} className="text-center">
+                        No hay proyectos aún.
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </Table>
-          </div>
+                  ) : (
+                    projects.map((project) => (
+                      <tr
+                        key={project.id}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handleRowClick(project.id)}
+                      >
+                        <td>{project.name}</td>
+                        <td>{new Date(project.initDate).toLocaleDateString('es-ES')}</td>
+                        <td>{project.endDate ? new Date(project.endDate).toLocaleDateString('es-ES') : 'N/A'}</td>
+                        <td>
+                          <Badge
+                            bg={
+                              project.state === "En progreso"
+                                ? "primary"
+                                : project.state === "Pendiente"
+                                ? "warning"
+                                : "success"
+                            }
+                          >
+                            {project.state}
+                          </Badge>
+                        </td>
+                        <td>
+                          <Badge
+                            bg={
+                              project.priority === 3
+                                ? "danger"
+                                : project.priority === 2
+                                ? "warning"
+                                : "secondary"
+                            }
+                          >
+                            {priorityLabels[project.priority - 1] || "Baja"}
+                          </Badge>
+                        </td>
+                        <td>{project.description}</td>
+                        {(userRole === "admin" || userRole === "superadmin") && (
+                          <td>
+                            <Button
+                              size="sm"
+                              variant="info"
+                              className="me-2"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleShowModal(project);
+                              }}
+                            >
+                              Editar
+                            </Button>
+                            {userRole === "superadmin" && (
+                              <Button
+                                size="sm"
+                                variant="danger"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(project.id);
+                                }}
+                              >
+                                Eliminar
+                              </Button>
+                            )}
+                          </td>
+                        )}
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </Table>
+            </div>
+          </div> {/* Fin de la fila del Calendario y la Tabla */}
+
+          {/* Modal de Agregar/Editar Proyecto */}
           <Modal show={showModal} onHide={handleCloseModal} centered>
             <Modal.Header closeButton>
               <Modal.Title>
@@ -364,28 +539,29 @@ const Trabajo = () => {
               </Modal.Footer>
             </Form>
           </Modal>
-        </div>
-      </div>
+
+          {/* Modal de Alerta de Acceso Restringido */}
+          <Modal
+            show={showAlertModal}
+            onHide={() => setShowAlertModal(false)}
+            centered
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Acceso restringido</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              Solo los administradores (o superadministradores para eliminar) pueden realizar esta acción.
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={() => setShowAlertModal(false)}>
+                Cerrar
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </div> {/* Cierre del div principal */}
+      </div> {/* Cierre del container */}
 
       <Footer texto="© 2025 Mi Organizador. Todos los derechos reservados." />
-
-      <Modal
-        show={showAlertModal}
-        onHide={() => setShowAlertModal(false)}
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Acceso restringido</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Solo los administradores pueden crear o eliminar proyectos.
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowAlertModal(false)}>
-            Cerrar
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </>
   );
 };

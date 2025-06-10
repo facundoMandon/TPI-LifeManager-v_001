@@ -1,0 +1,64 @@
+/* src/pages/ProjectTasks/ProjectTasks.css */
+
+/* Estilos para la tarjeta de tarea */
+.task-card-custom {
+    border-radius: 10px; /* Bordes más redondeados */
+    overflow: hidden; /* Asegura que el border-radius se aplique a los hijos */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+    transition: transform 0.2s ease-in-out; /* Transición suave al pasar el ratón */
+    border: none; /* Eliminar borde de Bootstrap para control total */
+}
+
+.task-card-custom:hover {
+    transform: translateY(-5px); /* Pequeño levantamiento al pasar el ratón */
+}
+
+.task-card-header-custom {
+    padding: 15px;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Separador suave */
+    border-top-left-radius: 10px; /* Redondear solo las esquinas superiores */
+    border-top-right-radius: 10px; /* Redondear solo las esquinas superiores */
+    color: white; /* Color de texto predeterminado para el encabezado */
+    font-size: 1.1em;
+}
+
+.task-card-body-custom {
+    background-color: white; /* Cuerpo de la tarjeta blanco */
+    color: #333; /* Texto oscuro para el cuerpo blanco */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Espacio entre contenido y footer */
+}
+
+.task-card-body-custom .card-text {
+    color: black;
+    margin-bottom: 8px; /* Espacio entre líneas de texto */
+    font-size: 0.95em;
+}
+
+.task-content-preview-custom {
+    font-size: 0.85em;
+    color: #666;
+    max-height: 80px; /* Aumenta un poco la altura del contenido de notas */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: pre-wrap; /* Mantiene saltos de línea */
+    padding-top: 10px;
+    margin-top: 10px;
+}
+
+/* Estilos para los botones dentro de la tarjeta */
+.task-card-custom .btn {
+    border-radius: 5px;
+    font-weight: 600;
+}
+
+/* Ajustes para responsividad en pantallas pequeñas */
+@media (max-width: 767px) {
+    .task-card-custom {
+        margin-bottom: 15px; /* Espacio entre tarjetas en móvil */
+    }
+}
+

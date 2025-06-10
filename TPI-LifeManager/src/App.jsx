@@ -6,7 +6,7 @@ import Login from "./sections/login/login.jsx";
 import Register from "./sections/register/register.jsx";
 import Home from "./sections/Home";
 import TasksLayout from "./sections/tareas/TasksLayout.jsx";
-import Tasks from "./sections/tareas/Tasks.jsx";
+import ProjectTasks from "./sections/tareas/ProjectTasks.jsx";
 import CreateTask from "./sections/tareas/create_tasks.jsx";
 import Header from "./components/Header.jsx";
 import { useState, useEffect } from "react";
@@ -55,7 +55,7 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Tasks />} />
+          <Route index element={<ProjectTasks />} />
           <Route
             path="crear"
             element={
@@ -82,7 +82,7 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Tasks />} />
+          <Route index element={<ProjectTasks />} />
           <Route
             path="crear"
             element={
@@ -92,6 +92,8 @@ const AppContent = () => {
             }
           />
         </Route>
+
+        <Route path="/project/:projectId/tasks" element={<ProjectTasks />} />
 
         <Route
           path="/login"

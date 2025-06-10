@@ -1,7 +1,6 @@
-import { INTEGER, Sequelize } from "sequelize";
+
 import sequelize from "../database/database.js";
 import { DataTypes } from "sequelize";
-import { Tasks } from "./Tasks.js";
 // esto es solo el esquema de la tabla
 //pero la tabla todavía no está creada. Este es solo el esqueleto.
 // el metodo "sequelize.define recibe tres argumentos" sequelize.define('nombreTabla', objeto, opciones)

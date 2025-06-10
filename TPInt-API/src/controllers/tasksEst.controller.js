@@ -36,7 +36,7 @@ export const createTask = async (req, res) => {
             title,
             description,
             initDate: initDate ? new Date(initDate) : new Date(),
-            endDate: endDate ? new Date(endDate) : null,
+            endDate: endDate ? new Date(endDate) : null, 
             done: false,
             sectionId: sectionId, // linkeo con la sección actual
             content: req.body.content || null,
