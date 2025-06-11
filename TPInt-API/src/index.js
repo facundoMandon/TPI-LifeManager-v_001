@@ -15,12 +15,12 @@ async function main() {
   } catch (error) {
     console.error("Unable to connect to the database", error);
   }
-}
+} 
 
 main();
 
 //que es esto de function main y qsy
-//bueno, paso por paso. 
+//bueno, paso por paso.  
 //Primero creo una funcion asincrona llamada main con un metodo que se llama trycatch
 //trycatch es un mecanismo que va a intentar ejecutar primero lo que está dentro de las {} de try
 //y si no puede, ejecuta el catch con un mensaje de error.

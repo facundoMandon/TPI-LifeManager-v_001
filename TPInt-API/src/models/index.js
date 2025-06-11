@@ -43,18 +43,6 @@ Project.belongsTo(User, {
   targetKey: "id",
 });
 
-//Relacion Usuario-Seccion
-
-User.hasMany(Section, {
-    foreignKey: "userId",
-    sourceKey: "id",
-});
-
-Section.belongsTo(User, {
-    foreignKey: "userId",
-    targetKey: "id",
-});
-
 //Relacion Usuario-Tasks
 
 User.hasMany(Tasks, {

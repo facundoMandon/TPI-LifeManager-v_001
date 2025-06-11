@@ -11,9 +11,6 @@ export const Section = sequelize.define("section", {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
-  },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
+    Unique: true
+  }
 });

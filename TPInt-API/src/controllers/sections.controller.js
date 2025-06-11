@@ -50,9 +50,6 @@ export const createSection = async (req, res) => {
     }
 };
 
-// NOTA: La función 'getAllSectionsByUserId' ha sido eliminada.
-// Ya no es necesaria, ya que las secciones son generales y la función 'getSections'
-// ahora se encarga de listar todas. Esto evita redundancia y confusión.
 
 export const updateSection = async (req, res) => {
     try {

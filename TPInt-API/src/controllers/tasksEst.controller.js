@@ -1,103 +1,152 @@
-import { TasksEst } from '../models/TasksEst.js';
+// src/controllers/tasksEst.controller.js
+import { TasksEst } from "../models/TasksEst.js"; // Importamos el modelo de TasksEst
 
-export const getTasksBySectionId = async (req, res) => {
+// Helper para verificar la autenticación
+const checkAuthentication = (req, res) => {
+  // El middleware `verifyToken` ya ha adjuntado la información del usuario a `req.user`.
+  // Si `req.user` no existe o no tiene un `id`, significa que el token no era válido
+  // o el middleware no lo procesó correctamente, y ya debería haber sido bloqueado por `verifyToken`.
+  // Esta es una verificación redundante pero segura en el controlador.
+  if (!req.user || !req.user.id) {
+    console.warn("Acceso denegado: Usuario no autenticado o ID de usuario no disponible en req.user.");
+    // Aunque verifyToken ya envía 401/403, esto es un fallback
+    return res.status(401).json({ message: "No autenticado. Por favor, inicia sesión." });
+  }
+  // console.log("Usuario autenticado en TasksEst controller:", req.user); // Para depuración
+  return null; // Retorna null si la autenticación es exitosa
+};
+
+// Obtener todas las tareas de estudio para una sección específica
+export const getTasksEst = async (req, res) => {
+  try {
+    const authError = checkAuthentication(req, res);
+    if (authError) return authError; // Si no autenticado, termina aquí
+
     const { sectionId } = req.params;
-    try {
-        const tasks = await TasksEst.findAll({
-            where: { sectionId: sectionId } // si sectionId es la columna que representa la sección
-        });
-        if (tasks.length === 0) {
-            return res.status(404).send('No tasks found for this section');
-        }
-        res.json(tasks);
-    } catch (error) {
-        console.error('Error fetching tasks by section ID:', error);
-        res.status(500).send('Internal Server Error');
-    }
+
+    // Buscamos todas las tareas que pertenezcan a este sectionId
+    const tasksEst = await TasksEst.findAll({
+      where: {
+        sectionId: sectionId,
+      },
+    });
+
+    res.json(tasksEst);
+  } catch (error) {
+    console.error("Error al obtener tareas de estudio:", error);
+    res.status(500).json({ message: "Error interno del servidor al obtener tareas de estudio." });
+  }
 };
 
-export const createTask = async (req, res) => {
-    const { sectionId } = req.params; // ahora sectionId viene de la URL
-    try {
-        const { title, description, initDate, endDate } = req.body;
-        if (!title || !description) {
-            return res.status(400).send('Title and description are required');
-        }
+// Obtener una sola tarea de estudio por su ID
+export const getTaskEst = async (req, res) => {
+  try {
+    const authError = checkAuthentication(req, res);
+    if (authError) return authError; // Si no autenticado, termina aquí
 
-        // Check if the task already exists for this section
-        const existingTask = await TasksEst.findOne({
-            where: { title, sectionId: sectionId },
-        });
-        if (existingTask) {
-            return res.status(400).send('Task already exists in this section');
-        }
-
-        const newTask = await TasksEst.create({
-            title,
-            description,
-            initDate: initDate ? new Date(initDate) : new Date(),
-            endDate: endDate ? new Date(endDate) : null, 
-            done: false,
-            sectionId: sectionId, // linkeo con la sección actual
-            content: req.body.content || null,
-        });
-
-        res.json(newTask);
-    }catch (error) {
-  console.error('Error creating task:', error);
-  res.status(500).json({ message: 'Internal Server Error', error: error.message });
-}
-};
-
-export const getTaskById = async (req, res) => {
     const { id } = req.params;
-    try {
-        const task = await TasksEst.findByPk(id);
-        if (!task) {
-            return res.status(404).send('Task not found');
-        }
-        res.json(task);
-    } catch (error) {
-        console.error('Error fetching task:', error);
-        res.status(500).send('Internal Server Error');
+    const taskEst = await TasksEst.findByPk(id);
+
+    if (!taskEst) {
+      return res.status(404).json({ message: "Tarea de estudio no encontrada." });
     }
+
+    res.json(taskEst);
+  } catch (error) {
+    console.error("Error al obtener tarea de estudio:", error);
+    res.status(500).json({ message: "Error interno del servidor al obtener tarea de estudio." });
+  }
 };
 
-export const updateTask = async (req, res) => {
+// Crear una nueva tarea de estudio
+export const createTaskEst = async (req, res) => {
+  try {
+    const authError = checkAuthentication(req, res);
+    if (authError) return authError; // Si no autenticado, termina aquí
+
+    const { sectionId } = req.params;
+    const { title, description, initDate, endDate, done, content } = req.body;
+
+    // Puedes añadir una verificación extra si sectionId es null/undefined aquí,
+    // aunque `mergeParams: true` y la ruta deben asegurarlo.
+    if (!sectionId) {
+      console.warn("Falta sectionId en createTaskEst.");
+      return res.status(400).json({ message: "ID de sección es requerido." });
+    }
+    if (!title) {
+        console.warn("Falta el título en createTaskEst.");
+        return res.status(400).json({ message: "El título de la tarea es requerido." });
+    }
+
+    const newTaskEst = await TasksEst.create({
+      title,
+      description,
+      initDate,
+      endDate,
+      done,
+      sectionId: sectionId,
+      content,
+      // No asignamos userId aquí porque las tareas de estudio son generales (no user-specific en el modelo).
+      // El autenticación es solo para asegurar que un usuario logeado realiza la acción.
+    });
+
+    res.status(201).json(newTaskEst);
+  } catch (error) {
+    console.error("Error al crear tarea de estudio:", error);
+    res.status(500).json({ message: "Error interno del servidor al crear tarea de estudio." });
+  }
+};
+
+// Actualizar una tarea de estudio existente
+export const updateTaskEst = async (req, res) => {
+  try {
+    const authError = checkAuthentication(req, res);
+    if (authError) return authError; // Si no autenticado, termina aquí
+
     const { id } = req.params;
-    try {
-        const [updated] = await TasksEst.update(req.body, { where: { id } });
-        if (!updated) {
-            return res.status(404).send('Task not found');
-        }
-        const updatedTask = await TasksEst.findByPk(id);
-        res.json(updatedTask);
-    } catch (error) {
-        console.error('Error updating task:', error);
-        res.status(500).send('Internal Server Error');
+    const { title, description, initDate, endDate, done, content } = req.body;
+
+    const taskEst = await TasksEst.findByPk(id);
+
+    if (!taskEst) {
+      return res.status(404).json({ message: "Tarea de estudio no encontrada para actualizar." });
     }
+
+    taskEst.title = title !== undefined ? title : taskEst.title;
+    taskEst.description = description !== undefined ? description : taskEst.description;
+    taskEst.initDate = initDate !== undefined ? initDate : taskEst.initDate;
+    taskEst.endDate = endDate !== undefined ? endDate : taskEst.endDate;
+    taskEst.done = done !== undefined ? done : taskEst.done;
+    taskEst.content = content !== undefined ? content : taskEst.content;
+
+    await taskEst.save();
+
+    res.json(taskEst);
+  } catch (error) {
+    console.error("Error al actualizar tarea de estudio:", error);
+    res.status(500).json({ message: "Error interno del servidor al actualizar tarea de estudio." });
+  }
 };
 
-export const deleteTask = async (req, res) => {
+// Eliminar una tarea de estudio
+export const deleteTaskEst = async (req, res) => {
+  try {
+    const authError = checkAuthentication(req, res);
+    if (authError) return authError; // Si no autenticado, termina aquí
+
     const { id } = req.params;
-    try {
-        const deleted = await TasksEst.destroy({ where: { id } });
-        if (!deleted) {
-            return res.status(404).send('Task not found');
-        }
-        res.sendStatus(204);
-    } catch (error) {
-        console.error('Error deleting task:', error);
-        res.status(500).send('Internal Server Error');
-    }
-};
 
-export const getTasks = async (_req, res) => {
-    try {
-        const tasks = await TasksEst.findAll();
-        res.json(tasks);
-    } catch (error) {
-        console.error('Error fetching tasks:', error);
-        res.status(500).send('Internal Server Error');
+    const deletedRows = await TasksEst.destroy({
+      where: { id },
+    });
+
+    if (deletedRows === 0) {
+      return res.status(404).json({ message: "Tarea de estudio no encontrada para eliminar." });
     }
+
+    res.status(204).send();
+  } catch (error) {
+    console.error("Error al eliminar tarea de estudio:", error);
+    res.status(500).json({ message: "Error interno del servidor al eliminar tarea de estudio." });
+  }
 };

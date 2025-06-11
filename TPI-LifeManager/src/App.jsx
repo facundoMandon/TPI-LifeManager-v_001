@@ -8,6 +8,7 @@ import Home from "./sections/Home";
 import TasksLayout from "./sections/tareas/TasksLayout.jsx";
 import ProjectTasks from "./sections/tareas/ProjectTasks.jsx";
 import CreateTask from "./sections/tareas/create_tasks.jsx";
+import TasksEst from "./sections/tareas/TasksEst.jsx";
 import Header from "./components/Header.jsx";
 import { useState, useEffect } from "react";
 import ProtectedRoute from "./components/protectedRoutes.jsx"; // Importar el componente ProtectedRoute
@@ -48,10 +49,10 @@ const AppContent = () => {
           }
         />
         <Route
-          path="/estudios/:id/tareas"
+          path="/estudios/:id/TasksEst"
           element={
             <ProtectedRoute>
-              <TasksLayout />
+              <TasksEst />
             </ProtectedRoute>
           }
         >
