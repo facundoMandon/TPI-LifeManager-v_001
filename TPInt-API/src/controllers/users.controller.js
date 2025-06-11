@@ -1,6 +1,6 @@
 import { User } from '../models/Users.js';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken'; // 👈 Importá JWT
+import jwt from 'jsonwebtoken';
 
 export const createUser = async (req, res) => {
   try {
@@ -23,10 +23,10 @@ export const createUser = async (req, res) => {
       rol,
     });
 
-    // ✅ Crear token JWT
+    // Crear token JWT
     const token = jwt.sign(
       { id: newUser.id, rol: newUser.rol },
-      process.env.JWT_SECRET || "secreto", // ← usa .env o fallback para desarrollo
+      process.env.JWT_SECRET || "secreto",
       { expiresIn: "1h" }
     );
 
@@ -38,7 +38,7 @@ export const createUser = async (req, res) => {
         email: newUser.email,
         rol: newUser.rol,
       },
-      token, // ← 🔥 Devolvés el token
+      token,
     });
 
   } catch (error) {

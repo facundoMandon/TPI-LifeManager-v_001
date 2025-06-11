@@ -1,6 +1,3 @@
-// sections/NotFound.jsx
-import React from "react";
-
 const NotFound = () => {
   return (
     <div className="text-center text-white mt-5 min-vh-100">

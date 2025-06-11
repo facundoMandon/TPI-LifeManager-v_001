@@ -4,7 +4,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // o "user", según lo que hayas guardado
+    localStorage.removeItem("token");
     setIsLoggedIn(false);
     navigate("/");
   };
@@ -32,7 +32,7 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
               </Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="#">
+              <a className="nav-link" href="/about">
                 About
               </a>
             </li>
@@ -88,10 +88,10 @@ const NavBar = ({ isLoggedIn, setIsLoggedIn }) => {
             ) : (
               <>
                 <Link className="btn btn-success me-2" to="/perfil">
-                  Profile  
+                  Perfil      
                 </Link>
                 <button className="btn btn-danger" onClick={handleLogout}>
-                  Logout
+                  Salir
                 </button>
               </>
             )}

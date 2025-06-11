@@ -8,10 +8,10 @@ const API_URL = "http://localhost:4000/sections";
 
 const Estudios = () => {
   const [sections, setSections] = useState([]);
-  const [form, setForm] = useState({ name: "" });
-  const [errors, setErrors] = useState({});
-  const [editId, setEditId] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({ name: "" }); // Estado para el formulario
+  const [errors, setErrors] = useState({}); // Estado para los errores de validación
+  const [editId, setEditId] = useState(null); // Estado para el ID de la sección que se está editando
+  const [loading, setLoading] = useState(false); // Para mostrar el estado de carga
   const [userRole, setUserRole] = useState(null); // Para almacenar el rol del usuario
   const [currentUserId, setCurrentUserId] = useState(null); // Para almacenar el ID del usuario actual
 
@@ -20,31 +20,29 @@ const Estudios = () => {
   // Función para obtener el token y el ID/rol del usuario
   const getAuthData = () => {
     const token = localStorage.getItem("token");
-    const user = JSON.parse(localStorage.getItem("user")); // Asumimos que el objeto user se guarda aquí
+    const user = JSON.parse(localStorage.getItem("user"));
 
     // Si no hay token o user, redirige a login
     if (!token || !user || !user.id || !user.rol) {
       console.warn("No hay token o datos de usuario, redirigiendo a login.");
-      navigate("/login"); // Asumiendo que "/login" es tu ruta de login
+      navigate("/login");
       return { token: null, userId: null, userRole: null };
     }
 
     return { token, userId: user.id, userRole: user.rol };
   };
 
-  useEffect(() => {
-    // Al cargar el componente, obtener el rol y ID del usuario
-    const { userId, userRole } = getAuthData();
+  useEffect(() => { //Ejecuto el codigo al cargar el componente
+    // Al cargar el componente, obtiene el rol y ID del usuario
+    const { userId, userRole } = getAuthData(); 
     setCurrentUserId(userId);
     setUserRole(userRole);
-
-    // Las secciones ahora son generales, no necesitamos pasar userId
-    fetchSections(); // <-- Llamada sin userId
+    fetchSections();
   }, []);
 
-  const fetchSections = async () => { // <-- Ya no recibe userIdToFetch como argumento
+  const fetchSections = async () => {
     setLoading(true);
-    const { token } = getAuthData(); // Obtener el token antes de la petición
+    const { token } = getAuthData();
 
     if (!token) { // Si no hay token, no proceder
       setLoading(false);
@@ -52,19 +50,18 @@ const Estudios = () => {
     }
 
     try {
-      // --- CAMBIO CLAVE AQUÍ: La URL ahora es solo la base de secciones ---
-      const res = await fetch(`${API_URL}`, { // <-- Ruta para obtener TODAS las secciones
+      const res = await fetch(`${API_URL}`, { 
         headers: {
-          Authorization: `Bearer ${token}`, // <-- ¡Header de autorización aquí!
+          Authorization: `Bearer ${token}`, 
         },
       });
 
-      if (res.status === 401) { // Si token inválido o expirado
+      if (res.status === 401) { // Si el token es inválido
         alert("Tu sesión ha expirado o es inválida. Por favor, inicia sesión de nuevo.");
         navigate("/login");
         return;
       }
-      if (res.status === 403) { // Si autenticado, pero sin permisos para ver la información (menos común para listado general)
+      if (res.status === 403) { // Si autenticado, pero sin permisos para ver la información
         alert("No tienes permiso para ver esta información.");
         setSections([]); // Limpia las secciones si no tiene permiso para verlas
         setLoading(false);
@@ -94,7 +91,7 @@ const Estudios = () => {
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) return;
 
-    // Asegurarse de que solo los administradores puedan crear/editar secciones
+    // Aseguramos que solo los admin o superadmin puedan crear/editar secciones
     if (userRole !== "admin" && userRole !== "superadmin") {
       alert("Solo los administradores o superadministradores pueden crear/editar secciones.");
       return;
@@ -102,6 +99,7 @@ const Estudios = () => {
 
     const { token } = getAuthData(); // Obtener el token
     if (!token) return; // Si no hay token, no proceder
+    // Uso return para que no se ejecute el resto del código si no hay token, sino daría error al intentar hacer la petición.
 
     const body = {
       name: form.name.trim(),
@@ -114,7 +112,7 @@ const Estudios = () => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // <-- Header de autorización
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(body),
         });
@@ -123,7 +121,7 @@ const Estudios = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // <-- Header de autorización
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(body),
         });
@@ -154,7 +152,7 @@ const Estudios = () => {
       setForm({ name: "" });
       setEditId(null);
       setErrors({});
-      fetchSections(); // <-- Refrescar la lista de secciones generales
+      fetchSections(); 
     } catch (error) {
       console.error("Error al guardar la sección", error);
     }
@@ -221,7 +219,6 @@ const Estudios = () => {
       </p>
 
       <div className="row">
-        {/* Renderizado condicional del formulario de agregar/editar estudios */}
         {(userRole === "admin" || userRole === "superadmin") && (
           <div className="col-md-6 mb-4">
             <h2>{editId ? "Editar Estudio" : "Agregar Estudio"}</h2>
@@ -234,7 +231,6 @@ const Estudios = () => {
                   value={form.name}
                   onChange={handleChange}
                   isInvalid={!!errors.name}
-                  // El `disabled` aquí es redundante si todo el div se oculta, pero no hace daño
                   disabled={userRole !== "admin" && userRole !== "superadmin"}
                 />
                 <Form.Control.Feedback type="invalid">
@@ -245,7 +241,6 @@ const Estudios = () => {
               <Button
                 type="submit"
                 variant="primary"
-                // El `disabled` aquí es redundante si todo el div se oculta, pero no hace daño
                 disabled={userRole !== "admin" && userRole !== "superadmin"}
               >
                 {editId ? "Guardar Cambios" : "Agregar"}
@@ -267,13 +262,10 @@ const Estudios = () => {
             </Form>
           </div>
         )}
-
-        {/* La columna de la lista de estudios siempre se muestra */}
-        {/* CLASE DINÁMICA: Si es admin/superadmin, ocupa 6 columnas. Si es 'usuario', ocupa 8 y se centra. */}
         <div className={
           (userRole === "admin" || userRole === "superadmin")
             ? "col-md-6 mb-4"
-            : "col-12 col-md-8 mx-auto mb-4" // col-12 para pantallas pequeñas, col-md-8 y centrado para medianas/grandes
+            : "col-12 col-md-8 mx-auto mb-4"
         }>
           <h2>Lista de Estudios</h2>
           {loading ? (
@@ -329,7 +321,6 @@ const Estudios = () => {
             </ListGroup>
           )}
         </div>
-        {/* Los divs de información adicional no necesitan cambios de seguridad aquí */}
         <div className="my-4">
           <h2>Consejos para el Estudio</h2>
           <ul className="list-unstyled">

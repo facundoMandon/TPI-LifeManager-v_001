@@ -18,3 +18,5 @@ const taskCardsData = [
 ];
 
 export default taskCardsData;
+
+// estas eran tarjetas de ejemplo o prueba que utilicé para probar el funcionamiento

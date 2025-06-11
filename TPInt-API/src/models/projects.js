@@ -1,11 +1,6 @@
 
 import sequelize from "../database/database.js";
 import { DataTypes } from "sequelize";
-// esto es solo el esquema de la tabla
-//pero la tabla todavía no está creada. Este es solo el esqueleto.
-// el metodo "sequelize.define recibe tres argumentos" sequelize.define('nombreTabla', objeto, opciones)
-//objeto va a tener los tipos de datos que va a guardar la tabla (ejemplo {id: {type: DataTypes.INTEGER, autoincrement:true, primaryKey: true}})
-//como tercer argumento (es opcional), vamos a poner las opciones del tipo "timestamps: false" o similar.
 export const Project = sequelize.define(
   "projects",
   {

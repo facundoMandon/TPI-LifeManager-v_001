@@ -2,9 +2,9 @@ import { Footer, Header } from "../../components";
 import { useState, useEffect } from "react";
 import { Button, Modal, Form, Table, Badge } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import Calendar from 'react-calendar'; // Importa el componente Calendar
-import 'react-calendar/dist/Calendar.css'; // Importa los estilos CSS del calendario
-import "./Trabajo.css"; // Asegúrate de tener un archivo CSS para estilos personalizados
+import Calendar from 'react-calendar'; 
+import 'react-calendar/dist/Calendar.css'; 
+import "./Trabajo.css"; 
 
 const priorityLabels = ["Baja", "Media", "Alta"];
 
@@ -30,12 +30,8 @@ const Trabajo = () => {
 
   // URL del backend para proyectos y tareas
   const API_PROJECTS_URL = "http://localhost:4000/projects";
-  // --- CAMBIO CLAVE AQUÍ: URL para tareas de un usuario ---
-  const API_TASKS_USER_URL = "http://localhost:4000/tasks/user"; // Nueva URL base para tareas por usuario
-  // --- CAMBIO CLAVE AQUÍ: URL para tareas de un proyecto ---
-  const API_TASKS_PROJECT_URL = "http://localhost:4000/tasks/project"; // Nueva URL base para tareas por proyecto
-
-  // La URL base para crear/editar/eliminar tareas individuales por ID sigue siendo la misma:
+  const API_TASKS_USER_URL = "http://localhost:4000/tasks/user"; 
+  const API_TASKS_PROJECT_URL = "http://localhost:4000/tasks/project";
   const API_TASKS_URL = "http://localhost:4000/tasks";
 
 
@@ -53,25 +49,23 @@ const Trabajo = () => {
     return { token, userId: user.id, userRole: user.rol };
   };
 
-  // useEffect principal para cargar datos al inicio
+  // useEffect principal para cargar datos al inicio, lo mismo que use en el componente de Estudios
   useEffect(() => {
-    const { token, userId, userRole } = getAuthData(); // Obtener todo de una vez
+    const { token, userId, userRole } = getAuthData();
     setCurrentUserId(userId);
     setUserRole(userRole);
 
     if (token && userId) { // Solo intentar cargar datos si hay token y userId válidos
-      fetchProjects(token); // Pasar el token directamente
-      fetchTasksForCalendar(userId, token); // Pasar userId y token directamente
+      fetchProjects(token); 
+      fetchTasksForCalendar(userId, token);
     }
   }, []); // Dependencia vacía: se ejecuta solo una vez al montar el componente
 
-
-  // --- Fetching de Proyectos (Global para todos los usuarios) ---
-  const fetchProjects = async (token) => { // Recibe el token como argumento
+  const fetchProjects = async (token) => { 
     if (!token) return; // Si no hay token, salir
 
     try {
-      console.log('Intentando obtener proyectos de:', API_PROJECTS_URL); // Log de depuración
+      console.log('Intentando obtener proyectos de:', API_PROJECTS_URL);
       const res = await fetch(API_PROJECTS_URL, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -92,25 +86,21 @@ const Trabajo = () => {
       setProjects(data);
     } catch (err) {
       console.error("Error al cargar proyectos:", err);
-      // alert("Error al cargar los proyectos."); // Se comentó para evitar alertas repetitivas
     }
   };
 
-  // --- Fetching de Tareas para el Calendario (basado en el usuario actual) ---
-  const fetchTasksForCalendar = async (userId, token) => { // Recibe userId y token como argumentos
+  const fetchTasksForCalendar = async (userId, token) => { 
     if (!userId || !token) return; // Si falta userId o token, salir
 
     try {
-      // --- CAMBIO APLICADO AQUÍ: URL para tareas por usuario ---
-      console.log('Intentando obtener tareas para calendario de:', `${API_TASKS_USER_URL}/${userId}`); // Log de depuración
-      const res = await fetch(`${API_TASKS_USER_URL}/${userId}`, { // URL actualizada
+      console.log('Intentando obtener tareas para calendario de:', `${API_TASKS_USER_URL}/${userId}`);
+      const res = await fetch(`${API_TASKS_USER_URL}/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (res.status === 401) {
         console.warn("Token expirado o inválido al intentar obtener tareas para el calendario.");
         setTasksForCalendar([]);
-        // navigate("/login"); // No redirigir aquí para no interrumpir el flujo si ya está en la página
         return;
       }
       if (res.status === 403) {
@@ -124,8 +114,6 @@ const Trabajo = () => {
       setTasksForCalendar(data);
     } catch (err) {
       console.error("Error al cargar tareas para el calendario:", err);
-      // setTasksForCalendar([]); // Ya se limpia en caso de 401/403
-      // alert("Error al cargar las tareas del calendario."); // Se comentó
     }
   };
 
@@ -179,7 +167,7 @@ const Trabajo = () => {
 
     const projectData = {
       ...form,
-      userId: currentUserId, // Los proyectos son específicos del usuario
+      userId: currentUserId,
     };
 
     if (userRole !== "admin" && userRole !== "superadmin") {
@@ -203,7 +191,7 @@ const Trabajo = () => {
           }
         );
       } else {
-        console.log('Intentando crear proyecto en:', API_PROJECTS_URL); // Log de depuración
+        console.log('Intentando crear proyecto en:', API_PROJECTS_URL); 
         res = await fetch(API_PROJECTS_URL, {
           method: "POST",
           headers: {
@@ -257,7 +245,7 @@ const Trabajo = () => {
     if (!token) return;
 
     try {
-      console.log('Intentando eliminar proyecto:', `${API_PROJECTS_URL}/${id}`); // Log de depuración
+      console.log('Intentando eliminar proyecto:', `${API_PROJECTS_URL}/${id}`); 
       const res = await fetch(`${API_PROJECTS_URL}/${id}`, {
         method: "DELETE",
         headers: {
@@ -347,7 +335,6 @@ const Trabajo = () => {
                 ? "col-12 col-md-8 mb-4"
                 : "col-12 col-md-8 mx-auto mb-4"
             }>
-              {/* Encabezado con título de proyectos y botón de agregar */}
               <div
                 className="d-flex justify-content-between align-items-center mb-3"
               >
@@ -452,7 +439,7 @@ const Trabajo = () => {
                 </tbody>
               </Table>
             </div>
-          </div> {/* Fin de la fila del Calendario y la Tabla */}
+          </div>
 
           {/* Modal de Agregar/Editar Proyecto */}
           <Modal show={showModal} onHide={handleCloseModal} centered>
@@ -558,8 +545,8 @@ const Trabajo = () => {
               </Button>
             </Modal.Footer>
           </Modal>
-        </div> {/* Cierre del div principal */}
-      </div> {/* Cierre del container */}
+        </div> 
+      </div>
 
       <Footer texto="© 2025 Mi Organizador. Todos los derechos reservados." />
     </>

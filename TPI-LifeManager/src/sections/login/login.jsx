@@ -26,9 +26,9 @@ const Login = ({ setIsLoggedIn }) => {
         throw new Error(data.message || "Error al iniciar sesión");
       }
 
-      localStorage.setItem("user", JSON.stringify(data.user)); // 👈 NUEVO
+      localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", data.token);
-      localStorage.setItem("rol", data.user.rol); // (opcional; ya está en user.rol)
+      localStorage.setItem("rol", data.user.rol);
       localStorage.setItem("isLoggedIn", "true");
       console.log("Login exitoso:", data.user);
       setIsLoggedIn(true);

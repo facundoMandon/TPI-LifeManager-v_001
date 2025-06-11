@@ -31,18 +31,6 @@ function TasksEstPage() {
     content: ''
   });
 
-  // Función para obtener un color aleatorio para el post-it
-  const getRandomColor = () => {
-    const colors = [
-      'bg-warning', // Amarillo claro
-      'bg-info',    // Azul claro
-      'bg-success', // Verde
-      'bg-danger',  // Rojo
-      'bg-primary', // Azul oscuro
-      'bg-secondary' // Gris
-    ];
-    return colors[Math.floor(Math.random() * colors.length)];
-  };
 
   // Función para obtener el token del localStorage
   const getToken = () => {
@@ -76,7 +64,7 @@ function TasksEstPage() {
       try {
         const response = await fetch(`${API_BASE_URL}/estudios/${sectionId}/tasksEst`, {
           headers: {
-            'Authorization': `Bearer ${token}` // <--- ENVIAR EL TOKEN AQUÍ
+            'Authorization': `Bearer ${token}`
           }
         });
 
@@ -101,7 +89,7 @@ function TasksEstPage() {
     };
 
     fetchTasks();
-  }, [sectionId, navigate]); // Añadir navigate a las dependencias del useEffect
+  }, [sectionId, navigate]);
 
   // Manejador de cambios en los campos del formulario
   const handleChange = (e) => {
@@ -117,17 +105,22 @@ function TasksEstPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const token = getToken(); // Obtener el token
+    const token = getToken();
     if (!token) {
         setLoading(false);
         return;
     }
 
+    // Decide si es una creación o actualización de tarea
+    // Si currentTask está definido, significa que estamos editando una tarea existente
+    // caso contrario, estamos creando una nueva tarea
     const method = currentTask ? 'PUT' : 'POST';
     const url = currentTask
       ? `${API_BASE_URL}/estudios/${sectionId}/tasksEst/${currentTask.id}`
       : `${API_BASE_URL}/estudios/${sectionId}/tasksEst`;
 
+      //creo un objeto payload con los datos del formulario
+      //y cambio las fechas a formato ISO si están definidas
     const payload = {
       ...formData,
       initDate: formData.initDate ? new Date(formData.initDate).toISOString() : null,
@@ -139,7 +132,7 @@ function TasksEstPage() {
         method: method,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` // <--- ENVIAR EL TOKEN AQUÍ
+          'Authorization': `Bearer ${token}` //
         },
         body: JSON.stringify(payload),
       });
@@ -155,10 +148,10 @@ function TasksEstPage() {
       }
 
       const updatedTask = await response.json();
-      if (currentTask) {
-        setTasks(tasks.map(task => (task.id === updatedTask.id ? updatedTask : task)));
+      if (currentTask) { // si existe una tarea actual, actualizamos
+        setTasks(tasks.map(task => (task.id === updatedTask.id ? updatedTask : task))); // si task.id es igual a updatedTask.id, actualizamos la tarea, sino dejamos la tarea como estaba
       } else {
-        setTasks([...tasks, updatedTask]);
+        setTasks([...tasks, updatedTask]); // agregamos la nueva tarea a la lista (al final)
       }
       resetForm();
       setShowForm(false);
@@ -186,7 +179,6 @@ function TasksEstPage() {
 
   // Función para eliminar una tarea
   const handleDelete = async (id) => {
-    // IMPORTANTE: En un entorno de producción, reemplazar window.confirm con un modal personalizado.
     if (!window.confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
       return;
     }
@@ -229,7 +221,8 @@ function TasksEstPage() {
   const toggleDone = async (task) => {
     setLoading(true);
     setError(null);
-    const token = getToken(); // Obtener el token
+    const token = getToken(); 
+    
     if (!token) {
         setLoading(false);
         return;
@@ -241,7 +234,7 @@ function TasksEstPage() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` // <--- ENVIAR EL TOKEN AQUÍ
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(updatedTask),
       });
@@ -280,12 +273,12 @@ function TasksEstPage() {
   };
 
   // Pantallas de carga y error con estilos de Bootstrap
-  if (loading && !tasks.length) return (
+  if (loading && !tasks.length) return ( // si loading es true y no hay tareas, mostramos el mensaje de carga
     <Container fluid className="d-flex align-items-center justify-content-center min-vh-100 bg-dark text-white">
       <p className="fs-4 text-center">Cargando tareas de estudio...</p>
     </Container>
   );
-  if (error) return (
+  if (error) return ( // si hay un error, mostramos el mensaje de error
     <Container fluid className="d-flex align-items-center justify-content-center min-vh-100 bg-dark text-white">
       <Alert variant="danger" className="text-center">
         <p className="fs-4 mb-0">Error: {error}</p>
@@ -294,8 +287,7 @@ function TasksEstPage() {
   );
 
   return (
-    // Contenedor principal con fondo oscuro y altura mínima para cubrir la página
-    <Container fluid className="min-vh-100 bg-dark text-white py-5">
+    <Container fluid className="min-vh-100 text-white py-5">
       <Container className="my-5">
         <h1 className="display-4 fw-bold text-center mb-5 text-white">
           Tareas de Estudio para Sección: {sectionId}
@@ -308,7 +300,7 @@ function TasksEstPage() {
               setShowForm(!showForm);
               if (showForm) resetForm();
             }}
-            variant="success" // Usamos success para el botón de agregar
+            variant="success"
             size="lg"
             className="rounded-3 shadow-lg px-5 py-3"
           >
@@ -386,7 +378,7 @@ function TasksEstPage() {
                     label={<span className="fw-bold">Tarea Realizada</span>}
                     checked={formData.done}
                     onChange={handleChange}
-                    className="text-white d-flex" // Asegura que el label sea blanco
+                    className="text-white d-flex"
                   />
                 </Form.Group>
 
@@ -420,12 +412,12 @@ function TasksEstPage() {
         {tasks.length === 0 ? (
           <p className="text-center fs-5 text-muted mt-5">No hay tareas de estudio para esta sección aún. ¡Crea una!</p>
         ) : (
-          <Row xs={1} md={2} lg={3} className="g-4"> {/* Grid responsive con gap */}
+          <Row xs={1} md={2} lg={3} className="g-4">
             {tasks.map(task => (
               <Col key={task.id}>
-                <Card className="h-100 bg-secondary text-white rounded-3 shadow-lg d-flex flex-column"> {/* Card como contenedor */}
+                <Card className="h-100 bg-secondary text-white rounded-3 shadow-lg d-flex flex-column">
                   <Card.Body className="d-flex flex-column p-4">
-                    <Row className="flex-grow-1"> {/* Fila para detalles y post-it */}
+                    <Row className="flex-grow-1">
                       <Col md={task.content ? 6 : 12} className="d-flex flex-column justify-content-start">
                         <div>
                           <Card.Title className={`h4 fw-bold mb-2 ${task.done ? 'text-decoration-line-through text-muted' : 'text-white'}`}>
@@ -452,8 +444,8 @@ function TasksEstPage() {
                       </Col>
 
                       {task.content && (
-                        <Col md={6} className="d-flex"> {/* Columna para el post-it */}
-                          <Card className={`w-100 text-white text-dark rounded-3 shadow-sm p-3`} style={{ border: 'none' }}> {/* Nested Card para el post-it */}
+                        <Col md={6} className="d-flex">
+                          <Card className={`w-100 text-white text-dark rounded-3 shadow-sm p-3`} style={{ border: 'none' }}>
                             <Card.Subtitle className="mb-3 fw-bold text-dark">Notas:</Card.Subtitle>
                             <Card.Text className="text-dark">{task.content}</Card.Text>
                           </Card>
@@ -463,7 +455,7 @@ function TasksEstPage() {
                   </Card.Body>
 
                   {/* Botones de acción */}
-                  <Card.Footer className="bg-transparent border-0 pt-0 pb-2 text-end"> {/* Footer transparente y sin borde superior */}
+                  <Card.Footer className="bg-transparent border-0 pt-0 pb-2 text-end">
                     <Button
                       onClick={() => toggleDone(task)}
                       variant={task.done ? 'warning' : 'success'}
@@ -474,7 +466,7 @@ function TasksEstPage() {
                     </Button>
                     <Button
                       onClick={() => handleEdit(task)}
-                      variant="info" // Usamos variant="info" como en ProjectTasks
+                      variant="info" // variant es info para un botón azul claro
                       size="sm"
                       className="me-2 rounded-3"
                     >
@@ -482,7 +474,7 @@ function TasksEstPage() {
                     </Button>
                     <Button
                       onClick={() => handleDelete(task.id)}
-                      variant="danger"
+                      variant="danger" // en este caso es danger para un botón rojo
                       size="sm"
                       className="rounded-3"
                     >

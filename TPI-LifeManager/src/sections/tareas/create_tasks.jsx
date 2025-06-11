@@ -12,7 +12,6 @@ const CreateTask = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
-    // Redirigir o limpiar el formulario
   };
 
   return (

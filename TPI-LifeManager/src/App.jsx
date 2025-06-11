@@ -11,8 +11,8 @@ import CreateTask from "./sections/tareas/create_tasks.jsx";
 import TasksEst from "./sections/tareas/TasksEst.jsx";
 import Header from "./components/Header.jsx";
 import { useState, useEffect } from "react";
-import ProtectedRoute from "./components/protectedRoutes.jsx"; // Importar el componente ProtectedRoute
-import NotFound from "./components/NotFound.jsx"; // Importar el componente NotFound
+import ProtectedRoute from "./components/protectedRoutes.jsx";
+import NotFound from "./components/NotFound.jsx";
 
 const AppContent = () => {
   const location = useLocation();

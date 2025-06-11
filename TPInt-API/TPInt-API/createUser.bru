@@ -4,21 +4,18 @@ meta {
   seq: 3
 }
 
-post {
-  url: http://localhost:4000/auth/register
+get {
+  url: http://localhost:4000/estudios/4/tasksEst
   body: json
   auth: inherit
 }
 
 headers {
   Content-Type: application/json
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mywicm9sIjoic3VwZXJhZG1pbiIsImVtYWlsIjoic3VwZXJhZG1pbkBzdXBlcmFkbWluLmNvbSIsImlhdCI6MTc0OTU5OTk0MCwiZXhwIjoxNzQ5NjA3MTQwfQ.P8fHtFpYKSJ_kYhwt7e4ANEpsQlM5qPUq9CmF1OTwMA
 }
 
 body:json {
-  {
-    "name": "facumandaonnn",
-    "email": "fm@gmaail.com",
-    "password": "12345",
-    "rol": "usuario"
-  }
+  
+  
 }

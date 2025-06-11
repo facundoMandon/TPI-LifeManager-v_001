@@ -4,7 +4,7 @@ export const requireRole = (allowedRoles) => {
     return (req, res, next) => {
         console.log('--- Iniciando requireRole middleware ---');
 
-        // 1. Verificar si req.user y req.user.rol existen
+        // Verifico si req.user y req.user.rol existen
         if (!req.user || !req.user.rol) {
             console.error('RequireRole: req.user o req.user.rol no definidos. Esto puede indicar un token inválido o que verifyToken no se ejecutó correctamente.');
             return res.status(403).json({ message: 'Acceso denegado: Rol de usuario no identificado.' });
@@ -14,7 +14,7 @@ export const requireRole = (allowedRoles) => {
         console.log(`RequireRole: Rol del usuario autenticado: '${userRole}' (Tipo: ${typeof userRole})`);
         console.log(`RequireRole: Roles permitidos (allowedRoles):`, allowedRoles, `(Tipo: ${Array.isArray(allowedRoles) ? 'Array' : typeof allowedRoles})`);
 
-        // 2. Realizar la verificación del rol
+        // Realizo la verificación del rol
         if (Array.isArray(allowedRoles)) {
             // Si `allowedRoles` es un array (ej. ['admin', 'superadmin'])
             if (allowedRoles.includes(userRole)) {

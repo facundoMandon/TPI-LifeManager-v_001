@@ -7,7 +7,6 @@ dotenv.config(); // carga variables del .env
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
-// ✅ LOGIN
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -24,7 +23,7 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: 'Contraseña incorrecta' });
     }
 
-    // ✅ Creamos el token JWT
+    // genero el token
     const payload = {
       id: user.id,
       rol: user.rol,
@@ -35,8 +34,7 @@ export const login = async (req, res) => {
 console.log("Payload usado para token:", payload);
 console.log("Token generado:", token);
 
-
-    // ✅ Datos del usuario sin contraseña
+ // envio el token y los datos del usuario
     const userData = {
       id: user.id,
       name: user.name,
@@ -51,7 +49,6 @@ console.log("Token generado:", token);
   }
 };
 
-// ✅ REGISTRO
 export const registerUser = async (req, res) => {
   const { name, email, password, rol } = req.body;
 
@@ -68,6 +65,7 @@ export const registerUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Crear el nuevo usuario
     const newUser = await User.create({
       name,
       email,
@@ -75,7 +73,7 @@ export const registerUser = async (req, res) => {
       rol
     });
 
-    // ✅ Generar token
+    // genero el token
     const payload = {
       id: newUser.id,
       rol: newUser.rol,
@@ -85,7 +83,7 @@ export const registerUser = async (req, res) => {
 
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '2h' });
 
-    // ✅ Enviar token + datos
+    //Envio token + datos
     res.status(201).json({
       message: 'Usuario creado exitosamente',
       user: {
@@ -94,7 +92,7 @@ export const registerUser = async (req, res) => {
         email: newUser.email,
         rol: newUser.rol
       },
-      token // ⬅️ devolvemos el token
+      token
     });
   } catch (error) {
     console.error('Error en registro:', error);

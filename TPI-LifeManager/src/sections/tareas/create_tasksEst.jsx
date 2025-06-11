@@ -14,7 +14,6 @@ const CreateTask = () => {
     });
     if (response.ok) {
       setForm({ title: "", description: "" }); // Limpiar el formulario
-      // Opcional: redirigir al usuario
     } else {
       // Manejar error
       alert("Error al crear la tarea");

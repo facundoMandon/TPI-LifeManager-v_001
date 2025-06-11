@@ -1,8 +1,7 @@
-// src/routes/tasks.routes.js
 import { Router } from "express";
 import {
   getTaskById,
-  getTasksByProjectId, // Nueva importación para la ruta por proyecto
+  getTasksByProjectId, 
   getTasksByUserId,
   updateTask,
   createTask,

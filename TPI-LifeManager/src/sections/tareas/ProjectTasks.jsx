@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Modal, Form, Card, Badge } from 'react-bootstrap';
-import { Footer } from '../../components'; // Asegúrate de que la ruta sea correcta
-import './ProjectTasks.css'; // Crearemos este archivo para estilos específicos de las tarjetas
+import { Footer } from '../../components'; 
+import './ProjectTasks.css'; 
 
 const ProjectTasks = () => {
   const { projectId } = useParams(); // Obtiene el ID del proyecto de la URL
@@ -56,8 +56,6 @@ const ProjectTasks = () => {
     }
   }, [projectId]);
 
-  // --- Funciones para Cargar Datos ---
-
   // Función auxiliar para verificar si un objeto está vacío o es nulo/indefinido
   const isObjectEmpty = (obj) => {
     return obj === null || typeof obj === 'undefined' || (Object.keys(obj).length === 0 && obj.constructor === Object);
@@ -83,13 +81,13 @@ const ProjectTasks = () => {
         throw new Error(`Error al obtener detalles del proyecto: ${res.status} - ${errorText}`);
       }
 
-      const responseBody = await res.text(); // Primero lee como texto
+      const responseBody = await res.text(); //sirve para obtener el cuerpo de la respuesta como texto
       console.log('Cuerpo de respuesta (texto) de fetchProjectDetails:', responseBody);
-      console.log('Longitud del cuerpo de respuesta:', responseBody.length); // Log de la longitud
+      console.log('Longitud del cuerpo de respuesta:', responseBody.length);
 
       let data;
       // Verificar si el cuerpo de la respuesta está vacío o solo contiene espacios en blanco
-      if (!responseBody.trim()) {
+      if (!responseBody.trim()) { //trim elimina espacios en blanco al inicio y al final
           console.warn('Cuerpo de respuesta de proyectos está vacío o solo contiene espacios en blanco.');
           throw new Error('La respuesta del servidor para los detalles del proyecto está vacía.');
       }
@@ -272,9 +270,7 @@ const ProjectTasks = () => {
   };
 
   const tileContent = ({ date, view }) => {
-    // Esta función no es relevante para ProjectTasks.jsx, ya que el calendario
-    // se muestra en Trabajo.jsx. Se mantiene aquí solo por completitud si fuera
-    // necesario mover el calendario a esta vista en el futuro.
+
     if (view === 'month') {
       const dayTasks = tasksForCalendar.filter(task => {
         const taskInitDate = new Date(task.initDate);
@@ -341,7 +337,6 @@ const ProjectTasks = () => {
                     </Card.Text>
                     {task.content && (
                       <>
-                        {/* REMOVIDO: className="mb-1" */}
                         <Card.Text><strong>Notas:</strong></Card.Text>
                         <Card.Text className="task-content-preview-custom">{task.content}</Card.Text>
                       </>

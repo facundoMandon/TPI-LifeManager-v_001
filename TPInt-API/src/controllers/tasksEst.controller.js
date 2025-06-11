@@ -1,18 +1,13 @@
-// src/controllers/tasksEst.controller.js
-import { TasksEst } from "../models/TasksEst.js"; // Importamos el modelo de TasksEst
+import { TasksEst } from "../models/TasksEst.js"; 
 
-// Helper para verificar la autenticación
 const checkAuthentication = (req, res) => {
-  // El middleware `verifyToken` ya ha adjuntado la información del usuario a `req.user`.
-  // Si `req.user` no existe o no tiene un `id`, significa que el token no era válido
-  // o el middleware no lo procesó correctamente, y ya debería haber sido bloqueado por `verifyToken`.
-  // Esta es una verificación redundante pero segura en el controlador.
+  
   if (!req.user || !req.user.id) {
     console.warn("Acceso denegado: Usuario no autenticado o ID de usuario no disponible en req.user.");
-    // Aunque verifyToken ya envía 401/403, esto es un fallback
+    
     return res.status(401).json({ message: "No autenticado. Por favor, inicia sesión." });
   }
-  // console.log("Usuario autenticado en TasksEst controller:", req.user); // Para depuración
+  
   return null; // Retorna null si la autenticación es exitosa
 };
 
@@ -20,7 +15,7 @@ const checkAuthentication = (req, res) => {
 export const getTasksEst = async (req, res) => {
   try {
     const authError = checkAuthentication(req, res);
-    if (authError) return authError; // Si no autenticado, termina aquí
+    if (authError) return authError; // Si no autenticado, termina acá
 
     const { sectionId } = req.params;
 
@@ -42,7 +37,7 @@ export const getTasksEst = async (req, res) => {
 export const getTaskEst = async (req, res) => {
   try {
     const authError = checkAuthentication(req, res);
-    if (authError) return authError; // Si no autenticado, termina aquí
+    if (authError) return authError; // Si no autenticado, termina acá
 
     const { id } = req.params;
     const taskEst = await TasksEst.findByPk(id);
@@ -62,13 +57,11 @@ export const getTaskEst = async (req, res) => {
 export const createTaskEst = async (req, res) => {
   try {
     const authError = checkAuthentication(req, res);
-    if (authError) return authError; // Si no autenticado, termina aquí
+    if (authError) return authError; // Si no autenticado, termina acá
 
     const { sectionId } = req.params;
     const { title, description, initDate, endDate, done, content } = req.body;
 
-    // Puedes añadir una verificación extra si sectionId es null/undefined aquí,
-    // aunque `mergeParams: true` y la ruta deben asegurarlo.
     if (!sectionId) {
       console.warn("Falta sectionId en createTaskEst.");
       return res.status(400).json({ message: "ID de sección es requerido." });
@@ -86,8 +79,6 @@ export const createTaskEst = async (req, res) => {
       done,
       sectionId: sectionId,
       content,
-      // No asignamos userId aquí porque las tareas de estudio son generales (no user-specific en el modelo).
-      // El autenticación es solo para asegurar que un usuario logeado realiza la acción.
     });
 
     res.status(201).json(newTaskEst);
@@ -101,7 +92,7 @@ export const createTaskEst = async (req, res) => {
 export const updateTaskEst = async (req, res) => {
   try {
     const authError = checkAuthentication(req, res);
-    if (authError) return authError; // Si no autenticado, termina aquí
+    if (authError) return authError; // Si no autenticado, termina acá
 
     const { id } = req.params;
     const { title, description, initDate, endDate, done, content } = req.body;
@@ -132,7 +123,7 @@ export const updateTaskEst = async (req, res) => {
 export const deleteTaskEst = async (req, res) => {
   try {
     const authError = checkAuthentication(req, res);
-    if (authError) return authError; // Si no autenticado, termina aquí
+    if (authError) return authError; // Si no autenticado, termina acá
 
     const { id } = req.params;
 

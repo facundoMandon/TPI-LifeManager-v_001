@@ -4,3 +4,5 @@ export { default as TaskCard } from './TaskCard';
 export { default as NavBar} from './NavBar';
 export { default as Section} from './Section';
 export { default as Login} from '../sections/login/login';
+
+// este index es para exportar todos los componentes de la carpeta components

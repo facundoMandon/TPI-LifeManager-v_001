@@ -18,14 +18,12 @@ export const createEntry = async (req, res) => {
         if (!title || !content || !userId) {
             return res.status(400).send('Title, content, and userId are required');
         }
-        // Check if the entry already exists
         const existingEntry = await Entry.findOne({
             where: { title, userId },
         });
         if (existingEntry) {
             return res.status(400).send('Entry already exists for this user');
         }
-        // Create a new entry
         const newEntry = await Entry.create({
             title,
             content,

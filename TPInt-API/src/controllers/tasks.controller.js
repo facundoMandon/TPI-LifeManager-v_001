@@ -1,6 +1,6 @@
 // src/controllers/tasks.controller.js
 import { Tasks } from '../models/Tasks.js';
-import { Project } from '../models/Projects.js'; // Necesitamos el modelo Projects para verificar la propiedad del proyecto
+import { Project } from '../models/Projects.js'; 
 
 // Función auxiliar para verificar la propiedad del proyecto
 const checkProjectOwnership = async (projectId, userId, userRole) => {
@@ -22,8 +22,7 @@ const checkProjectOwnership = async (projectId, userId, userRole) => {
 };
 
 
-// 1. Obtener tareas por Project ID (ruta: /tasks/by-project/:projectId)
-// Se asume que esta ruta se usa cuando ya estás en la vista de un proyecto específico.
+// Obtener tareas por Project ID
 export const getTasksByProjectId = async (req, res) => {
     try {
         console.log('--- Iniciando getTasksByProjectId ---');
@@ -31,16 +30,6 @@ export const getTasksByProjectId = async (req, res) => {
         console.log('ID del proyecto solicitado (req.params.projectId):', req.params.projectId);
 
         const projectId = parseInt(req.params.projectId, 10);
-        // const authenticatedUserId = req.user.id; // Ya no se usa para la visualización
-        // const authenticatedUserRole = req.user.rol; // Ya no se usa para la visualización
-
-        // --- CAMBIO CLAVE AQUÍ: Se eliminó la verificación de permisos para la visualización ---
-        // const hasPermission = await checkProjectOwnership(projectId, authenticatedUserId, authenticatedUserRole);
-        // if (!hasPermission) {
-        //     return res.status(403).json({ message: 'No tienes permiso para ver las tareas de este proyecto.' });
-        // }
-
-        // Opcional: Verificar que el proyecto exista, aunque la tarea se busque directamente por projectId
         const project = await Project.findByPk(projectId);
         if (!project) {
             console.warn(`Proyecto con ID ${projectId} no encontrado para obtener sus tareas.`);
@@ -62,7 +51,7 @@ export const getTasksByProjectId = async (req, res) => {
     }
 };
 
-// 2. Crear una nueva tarea (ruta: /tasks/:projectId)
+// Crear una nueva tarea 
 export const createTask = async (req, res) => {
     try {
         console.log("--- Iniciando createTask ---");
@@ -70,12 +59,12 @@ export const createTask = async (req, res) => {
         console.log("Usuario que intenta crear (req.user):", req.user);
         console.log("ID del proyecto desde URL (req.params.projectId):", req.params.projectId);
 
-        const projectId = parseInt(req.params.projectId, 10); // Asegura que sea un número entero
+        const projectId = parseInt(req.params.projectId, 10); // Asegura que sea un número entero (base decimal, por eso el 10)
         const { title, description, initDate, endDate, content, done } = req.body;
         const authenticatedUserId = req.user.id;
         const authenticatedUserRole = req.user.rol;
 
-        // Verificar permisos para crear la tarea en este proyecto (se mantiene restringido)
+        // Verificar permisos para crear la tarea en este proyecto 
         const hasPermission = await checkProjectOwnership(projectId, authenticatedUserId, authenticatedUserRole);
         if (!hasPermission) {
             return res.status(403).json({ message: 'No tienes permiso para crear tareas en este proyecto.' });
@@ -101,7 +90,7 @@ export const createTask = async (req, res) => {
             initDate: initDate ? new Date(initDate) : new Date(), // Si no se proporciona, usa la fecha actual
             endDate: endDate ? new Date(endDate) : null,
             done: done !== undefined ? done : false, // Permite que 'done' se establezca si viene en el body
-            projectId: projectId, // Vincula la tarea al ID del proyecto de la URL
+            projectId: projectId, // Vinculo la tarea al ID del proyecto de la URL
             content: content || null,
         });
 
@@ -115,7 +104,7 @@ export const createTask = async (req, res) => {
     }
 };
 
-// 3. Obtener una tarea por su ID (ruta: /tasks/:id)
+// Obtengo una tarea por su ID
 export const getTaskById = async (req, res) => {
     try {
         console.log('--- Iniciando getTaskById ---');
@@ -123,8 +112,6 @@ export const getTaskById = async (req, res) => {
         console.log('ID de la tarea solicitada (req.params.id):', req.params.id);
 
         const taskId = parseInt(req.params.id, 10);
-        // const authenticatedUserId = req.user.id; // Ya no se usa para la visualización
-        // const authenticatedUserRole = req.user.rol; // Ya no se usa para la visualización
 
         const task = await Tasks.findByPk(taskId);
         if (!task) {
@@ -132,11 +119,6 @@ export const getTaskById = async (req, res) => {
             return res.status(404).send('Tarea no encontrada.');
         }
 
-        // --- CAMBIO CLAVE AQUÍ: Se eliminó la verificación de permisos para la visualización ---
-        // const hasPermission = await checkProjectOwnership(task.projectId, authenticatedUserId, authenticatedUserRole);
-        // if (!hasPermission) {
-        //     return res.status(403).json({ message: 'No tienes permiso para ver esta tarea.' });
-        // }
 
         console.log("Tarea encontrada:", task.toJSON());
         res.status(200).json(task);
@@ -148,7 +130,7 @@ export const getTaskById = async (req, res) => {
     }
 };
 
-// 4. Actualizar una tarea (ruta: /tasks/:id)
+// Actualizo una tarea
 export const updateTask = async (req, res) => {
     try {
         console.log('--- Iniciando updateTask ---');
@@ -167,13 +149,13 @@ export const updateTask = async (req, res) => {
             return res.status(404).send('Tarea no encontrada.');
         }
 
-        // Verificar permisos para actualizar la tarea (se mantiene restringido)
+        // Verificar permisos para actualizar la tarea 
         const hasPermission = await checkProjectOwnership(taskToUpdate.projectId, authenticatedUserId, authenticatedUserRole);
         if (!hasPermission) {
             return res.status(403).json({ message: 'No tienes permiso para actualizar esta tarea.' });
         }
 
-        // Opcional: Si el título se está actualizando, verifica si el nuevo título ya existe en el mismo proyecto
+        // Si el título se está actualizando, verifica si el nuevo título ya existe en el mismo proyecto
         if (req.body.title && req.body.title.trim() !== taskToUpdate.title) {
             const existingTaskWithNewTitle = await Tasks.findOne({
                 where: { title: req.body.title.trim(), projectId: taskToUpdate.projectId }
@@ -212,7 +194,7 @@ export const updateTask = async (req, res) => {
     }
 };
 
-// 5. Eliminar una tarea (ruta: /tasks/:id)
+// Eliminar una tarea 
 export const deleteTask = async (req, res) => {
     try {
         console.log('--- Iniciando deleteTask ---');
@@ -230,8 +212,8 @@ export const deleteTask = async (req, res) => {
             return res.status(404).send('Tarea no encontrada.');
         }
 
-        // Verificar permisos para eliminar la tarea (se mantiene restringido)
-        // Solo superadmin puede eliminar cualquier tarea, o el dueño del proyecto.
+        // Verificar permisos para eliminar la tarea
+        // Solo superadmin puede eliminar cualquier tarea
         const hasPermission = await checkProjectOwnership(taskToDelete.projectId, authenticatedUserId, authenticatedUserRole);
         if (!hasPermission && authenticatedUserRole !== 'superadmin') {
             return res.status(403).json({ message: 'No tienes permiso para eliminar esta tarea.' });
@@ -257,8 +239,7 @@ export const deleteTask = async (req, res) => {
 };
 
 
-// 6. Obtener TODAS las tareas de los proyectos de un usuario (para el calendario)
-// Esta es la función que tu frontend de 'Trabajo.jsx' llamará a /tasks/by-user/:userId
+// Obtiene TODAS las tareas de los proyectos de un usuario (para el calendario)
 export const getTasksByUserId = async (req, res) => {
     try {
         console.log('--- Iniciando getTasksByUserId (para calendario) ---');
@@ -270,14 +251,11 @@ export const getTasksByUserId = async (req, res) => {
         const authenticatedUserRole = req.user.rol; // Rol del usuario autenticado
 
         // Lógica de autorización para ver tareas de otros usuarios:
-        // Un usuario normal solo puede ver las tareas de sus propios proyectos.
-        // Un admin o superadmin puede ver las tareas de los proyectos de CUALQUIER usuario.
         if (targetUserId !== authenticatedUserId && authenticatedUserRole !== 'admin' && authenticatedUserRole !== 'superadmin') {
             console.warn(`Usuario ${authenticatedUserId} (rol: ${authenticatedUserRole}) intentó acceder a tareas del usuario ${targetUserId} sin permisos.`);
             return res.status(403).json({ message: 'No tienes permiso para ver estas tareas.' });
         }
 
-        // Paso 1: Obtener todos los proyectos asociados al 'targetUserId'
         const userProjects = await Project.findAll({
             where: { userId: targetUserId }
         });
@@ -286,12 +264,11 @@ export const getTasksByUserId = async (req, res) => {
 
         if (projectIds.length === 0) {
             console.log(`No se encontraron proyectos para el usuario ${targetUserId}.`);
-            return res.status(200).json([]); // No hay proyectos, por lo tanto no hay tareas
+            return res.status(200).json([]); 
         }
 
-        // Paso 2: Obtener todas las tareas asociadas a los IDs de esos proyectos
         const tasks = await Tasks.findAll({
-            where: { projectId: projectIds } // Sequelize maneja un array de IDs para la cláusula 'IN'
+            where: { projectId: projectIds } 
         });
 
         console.log(`Tareas encontradas para el usuario ${targetUserId} (en ${projectIds.length} proyectos):`, tasks.length);
@@ -304,7 +281,3 @@ export const getTasksByUserId = async (req, res) => {
     }
 };
 
-// La función 'getTasks' original que traía todas las tareas sin filtro ha sido removida
-// para evitar ambigüedad, ya que el calendario usa 'getTasksByUserId'.
-// Si necesitas una ruta para ver ABSOLUTAMENTE todas las tareas de todos los proyectos (para superadmin),
-// necesitarías una nueva ruta y un controlador específico con requireRole('superadmin').

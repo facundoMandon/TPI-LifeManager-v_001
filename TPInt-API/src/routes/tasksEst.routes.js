@@ -1,4 +1,3 @@
-// src/routes/tasksEst.routes.js
 import { Router } from "express";
 import {
   getTasksEst,
@@ -9,16 +8,12 @@ import {
 } from "../controllers/tasksEst.controller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 
-// ¡IMPORTANTE! Usar { mergeParams: true } para acceder a parámetros de rutas parentales
-const router = Router({ mergeParams: true });
-
-// Definimos las rutas para las tareas de estudio
-// Estas rutas ahora podrán acceder a 'sectionId' desde req.params
-// cuando sean montadas bajo una ruta que contenga ese parámetro.
-router.get("/",verifyToken, getTasksEst);         // GET /estudios/:sectionId/tasksEst
-router.get("/:id",verifyToken, getTaskEst);       // GET /estudios/:sectionId/tasksEst/:id
-router.post("/",verifyToken, createTaskEst);      // POST /estudios/:sectionId/tasksEst
-router.put("/:id",verifyToken, updateTaskEst);    // PUT /estudios/:sectionId/tasksEst/:id
-router.delete("/:id",verifyToken, deleteTaskEst); // DELETE /estudios/:sectionId/tasksEst/:id
+const router = Router({ mergeParams: true }); //uso mergeParams para permitir el uso de 'sectionId' en las rutas
+//sin el mergeParams, no se puede acceder a los parámetros de la ruta padre (sectionId) en las rutas hijas (tasksEst)
+router.get("/",verifyToken, getTasksEst);         
+router.get("/:id",verifyToken, getTaskEst);       
+router.post("/",verifyToken, createTaskEst);      
+router.put("/:id",verifyToken, updateTaskEst);    
+router.delete("/:id",verifyToken, deleteTaskEst); 
 
 export default router;

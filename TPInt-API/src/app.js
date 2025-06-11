@@ -14,25 +14,26 @@ import dotenv from "dotenv"; //importamos dotenv para poder usar las variables d
 
 
 dotenv.config(); //cargamos las variables de entorno desde el archivo .env
+// dotenv es para la contraseñas super secreta
 
 const app = express(); //creamos la app que ejecuta express
 
 app.use(cors({
-  origin: 'http://localhost:3000', // permití solo el frontend
-  credentials: true, // opcional si vas a usar cookies o auth
+  origin: 'http://localhost:3000', 
+  credentials: true, 
 }));
-app.use(express.json()); // para poder parsear JSON en las requests, y guarda el body en req.body
-app.use("/projects", projectsRouter); //le decimos a express que use las rutas de projects.routes.js
-app.use("/users", userRouter); //le decimos a express que use las rutas de users.routes.js
-app.use("/tasks", tasksRouter); //le decimos a express que use las rutas de tasks.routes.js
-app.use("/tasksEst", tasksEstRouter); //le decimos a express que use las rutas de tasksEst.routes.js
-app.use("/estudios/:sectionId/tasksEst", tasksEstRouter); //le decimos a express que use las rutas de tasksEst.routes.js con el parámetro sectionId
-app.use("/estudios/:sectionId/tasks", tasksRouter);  //le decimos a express que use las rutas de tasks.routes.js con el parámetro sectionId
-app.use("/estudios", sectionsRouter); //le decimos a express que use las rutas de tasks.routes.js con el parámetro sectionId
-app.use("/sections", sectionsRouter); //le decimos a express que use las rutas de sections.routes.js
-app.use("/entries", entriesRouter); //le decimos a express que use las rutas de entries.routes.js
+app.use(express.json()); 
+app.use("/projects", projectsRouter); 
+app.use("/users", userRouter); 
+app.use("/tasks", tasksRouter); 
+app.use("/tasksEst", tasksEstRouter); 
+app.use("/estudios/:sectionId/tasksEst", tasksEstRouter); 
+app.use("/estudios/:sectionId/tasks", tasksRouter);  
+app.use("/estudios", sectionsRouter); 
+app.use("/sections", sectionsRouter); 
+app.use("/entries", entriesRouter); 
 app.use("/auth", authRouter);
-//y luego la exportamos para ejecutarla en otro lado (index.js)
+
 app.get("/", (req, res) => {
   res.send("API funcionando");}); //ruta de prueba para ver si la API está funcionando
 export default app;  

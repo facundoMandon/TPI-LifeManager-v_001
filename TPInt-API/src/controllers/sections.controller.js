@@ -56,10 +56,9 @@ export const updateSection = async (req, res) => {
         console.log('--- Iniciando updateSection ---');
         console.log('ID de sección a actualizar (req.params.id):', req.params.id);
         console.log('Datos de actualización (req.body):', req.body);
-        console.log('Usuario que intenta actualizar (req.user):', req.user); // Para depuración
+        console.log('Usuario que intenta actualizar (req.user):', req.user); 
 
         const { id } = req.params;
-        // La validación de rol ya se maneja en sections.routes.js con requireRole(['admin', 'superadmin'])
 
         // Primero, verifica si la sección existe
         const sectionToUpdate = await Section.findByPk(id);
@@ -81,7 +80,6 @@ export const updateSection = async (req, res) => {
         }
 
         // Actualiza la sección con los datos del cuerpo de la solicitud
-        // Asegúrate de que solo se actualicen los campos permitidos (ej. 'name')
         const [updatedRowsCount] = await Section.update(
             { name: req.body.name ? req.body.name.trim() : sectionToUpdate.name }, // Solo actualiza el nombre
             { where: { id } }
@@ -89,8 +87,7 @@ export const updateSection = async (req, res) => {
 
         if (updatedRowsCount === 0) {
             console.warn(`La sección general con ID ${id} no pudo ser actualizada (0 filas afectadas).`);
-            // Podría ser 0 si no hay cambios en los datos o si la sección no se encontró (aunque ya se verificó)
-            return res.status(200).send('Sección actualizada sin cambios o no encontrada.'); // 200 OK si no hay cambios, no 404
+            return res.status(200).send('Sección actualizada sin cambios o no encontrada.'); // 200 si no hay cambios, sino 404
         }
 
         const updatedSection = await Section.findByPk(id); // Vuelve a buscar la sección para obtener los datos actualizados
@@ -106,12 +103,10 @@ export const deleteSection = async (req, res) => {
     try {
         console.log('--- Iniciando deleteSection ---');
         console.log('ID de sección a eliminar (req.params.id):', req.params.id);
-        console.log('Usuario que intenta eliminar (req.user):', req.user); // Para depuración
+        console.log('Usuario que intenta eliminar (req.user):', req.user); 
 
         const { id } = req.params;
-        // La validación de rol 'superadmin' ya se maneja en sections.routes.js
 
-        // Primero, verifica si la sección existe antes de intentar eliminarla
         const sectionToDelete = await Section.findByPk(id);
 
         if (!sectionToDelete) {
@@ -125,7 +120,7 @@ export const deleteSection = async (req, res) => {
 
         if (deletedRowsCount === 0) {
             console.warn(`La sección general con ID ${id} no pudo ser eliminada (0 filas afectadas).`);
-            // Esto no debería ocurrir si sectionToDelete no fue null, pero se mantiene como una capa de seguridad
+            
             return res.status(404).send('Sección general no encontrada o ya eliminada.');
         }
         console.log(`Sección general con ID ${id} eliminada exitosamente.`);
